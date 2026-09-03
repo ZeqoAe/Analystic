@@ -174,6 +174,13 @@ button.tile{display:block;width:100%;font-family:inherit;color:var(--txt)}
 
 /* conversion RMB -> EUR affichee sous le champ de saisie */
 .conv{font-size:13px;color:var(--acc2);margin-top:5px;min-height:18px}
+#liens{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.lien{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+.lien .src{font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--acc);flex:none;
+  border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.lien a{flex:1;min-width:0;font-size:13px;color:var(--blue);text-decoration:none;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.lien button{flex:none;min-height:38px;width:38px;padding:0;background:transparent;border:0;color:var(--mut);font-size:17px}
 .conv.mut{color:var(--mut)}
 
 #sheet{position:fixed;inset:0;z-index:90;background:rgba(4,8,16,.66);display:flex;align-items:flex-end}
@@ -309,6 +316,18 @@ button.tile{display:block;width:100%;font-family:inherit;color:var(--txt)}
       <div><label>Téléphone</label><input id="f_vtel" inputmode="tel" placeholder=""></div>
     </div>
     <div class="row"><div><label>Email</label><input id="f_vmail" inputmode="email" autocapitalize="off" placeholder=""></div></div>
+  </div>
+
+  <!-- 8. LIENS -->
+  <div class="card">
+    <h2>8 · Liens<button type="button" class="ibtn" data-info="liens" aria-label="Aide">i</button></h2>
+    <div class="row c2" style="grid-template-columns:1fr auto">
+      <div><input id="f_lien" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false"
+                  enterkeyhint="done" placeholder="https://…"></div>
+      <div><button type="button" id="btn-lien-coller">📋 Coller</button></div>
+    </div>
+    <div id="liens"></div>
+    <div class="sm mut" style="margin-top:8px">Lien agent (LoveGoBuy, Weidian…), fiche 1688 ou Taobao : de quoi retrouver et recommander l'article sans repasser au stand.</div>
   </div>
 
   <!-- COMMERCIAL (secondaire) -->
@@ -793,7 +812,7 @@ function blankProduct() {
   return {
     id: uuid(), createdAt: now(), updatedAt: now(),
     photos: [], nom: '', categorie: '', stand: { batiment: '', etage: '', numero: '' }, geo: null,
-    noteVocale: null, transcription: '',
+    noteVocale: null, transcription: '', liens: [],
     prixUnitaireRMB: null, paliers: [], moq: null, delaiJours: null, personnalisation: false,
     pcsParCarton: null, cartonL: null, cartonW: null, cartonH: null, cartonPoidsKg: null,
     vendeur: { nom: '', societe: '', wechat: '', telephone: '', email: '', photoCarte: null },
@@ -853,7 +872,7 @@ function productToForm(p) {
   $('#f_vwechat').value = v.wechat || ''; $('#f_vtel').value = v.telephone || '';
   $('#f_vmail').value = v.email || '';
   if (!p.priorite) $('#f_prio').value = '3';
-  renderPaliers(); renderGeo(); renderEnrich(p);
+  renderPaliers(); renderGeo(); renderLiens(); renderEnrich(p);
 }
 function formToProduct() {
   const p = S.current;
@@ -879,10 +898,80 @@ function formToProduct() {
   p.noteVocale = S.audio ? { id: S.audio.id, mime: S.audio.mime,
                              durationMs: S.audio.durationMs, bytes: S.audio.bytes } : null;
   p.paliers = (p.paliers || []).filter((x) => x.qte !== null || x.prixRMB !== null);
+  p.liens = (p.liens || []).filter((l) => l && safeUrl(l.url));
   if (!p.statut) p.statut = 'nouveau';
   if (!p.priorite) p.priorite = 3;
   return p;
 }
+
+/* ---------- liens (agent, 1688, Taobao...) ----------
+   Sert a retrouver et recommander un article sans repasser au stand.
+   Seuls http/https sont acceptes : ces URL finissent dans un href, un
+   javascript: colle par megarde ne doit jamais devenir cliquable. */
+function safeUrl(raw) {
+  const t = String(raw || '').trim();
+  if (!t) return null;
+  let u;
+  try { u = new URL(t); }
+  catch (e) { try { u = new URL('https://' + t); } catch (e2) { return null; } }
+  if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+  if (!u.hostname || u.hostname.indexOf('.') < 0) return null;
+  return u.href;
+}
+const SOURCES = [
+  ['lovegobuy', 'LoveGoBuy'], ['weidian', 'Weidian'], ['1688', '1688'], ['taobao', 'Taobao'],
+  ['tmall', 'Tmall'], ['alibaba', 'Alibaba'], ['aliexpress', 'AliExpress'], ['pinduoduo', 'Pinduoduo'],
+  ['temu', 'Temu'], ['amazon', 'Amazon'], ['cdiscount', 'Cdiscount'], ['manomano', 'ManoMano'],
+  ['cnfans', 'CNFans'], ['mulebuy', 'Mulebuy'], ['hoobuy', 'Hoobuy'], ['superbuy', 'Superbuy'],
+  ['pandabuy', 'Pandabuy'], ['sugargoo', 'Sugargoo'], ['wegobuy', 'Wegobuy'], ['douyin', 'Douyin'],
+  ['xiaohongshu', 'Xiaohongshu'], ['jd.com', 'JD']
+];
+function sourceLien(url) {
+  let host = '';
+  try { host = new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch (e) { return 'lien'; }
+  const hit = SOURCES.filter((x) => host.indexOf(x[0]) >= 0 || url.toLowerCase().indexOf(x[0]) >= 0)[0];
+  return hit ? hit[1] : host.split('.')[0];
+}
+function renderLiens() {
+  const box = $('#liens'), list = (S.current && S.current.liens) || [];
+  box.innerHTML = list.map((l, i) =>
+    '<div class="lien"><span class="src">' + esc(sourceLien(l.url)) + '</span>' +
+    '<a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer">' + esc(l.url) + '</a>' +
+    '<button type="button" data-lcopy="' + i + '" aria-label="Copier">⧉</button>' +
+    '<button type="button" data-ldel="' + i + '" aria-label="Supprimer">×</button></div>').join('');
+}
+function addLien(raw) {
+  const url = safeUrl(raw !== undefined ? raw : $('#f_lien').value);
+  if (!url) { toast('Lien invalide — il doit commencer par http'); return false; }
+  S.current.liens = S.current.liens || [];
+  if (S.current.liens.some((l) => l.url === url)) { toast('Lien déjà présent'); $('#f_lien').value = ''; return false; }
+  S.current.liens.push({ url: url, ajouteLe: now() });
+  $('#f_lien').value = '';
+  renderLiens();
+  toast('Lien ajouté');
+  return true;
+}
+$('#f_lien').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); addLien(); }
+});
+$('#f_lien').addEventListener('change', () => { if ($('#f_lien').value.trim()) addLien(); });
+$('#btn-lien-coller').addEventListener('click', async () => {
+  try {
+    const t = await navigator.clipboard.readText();
+    if (t && t.trim()) { addLien(t); return; }
+  } catch (e) { /* refus ou API absente : saisie manuelle */ }
+  $('#f_lien').focus();
+  toast('Colle le lien dans le champ');
+});
+$('#liens').addEventListener('click', async (e) => {
+  const del = e.target.closest('[data-ldel]'), cp = e.target.closest('[data-lcopy]');
+  if (del) { S.current.liens.splice(+del.dataset.ldel, 1); renderLiens(); return; }
+  if (cp) {
+    const l = S.current.liens[+cp.dataset.lcopy];
+    try { await navigator.clipboard.writeText(l.url); toast('Lien copié'); }
+    catch (err) { prompt('Copier le lien :', l.url); }
+  }
+});
 
 /* --- bandeau de calcul, recalcule a chaque frappe --- */
 function refreshCalc() {
@@ -1031,6 +1120,11 @@ const INFO = {
     'Sert à calculer le poids taxable en aérien : un colis volumineux mais léger est facturé à son volume.' +
     '<span class="f">(L × l × H en cm) ÷ 6000 = poids volumétrique en kg. 6000 est la valeur usuelle ; ' +
     'certains transporteurs utilisent 5000.</span>'],
+  liens: ['Liens vers l\'article',
+    'Colle ici l\'URL d\'un agent (LoveGoBuy, Weidian, CNFans…), d\'une fiche 1688 ou Taobao. ' +
+    'C\'est ce qui te permet de <b>retrouver et recommander</b> l\'article sans repasser au stand.' +
+    '<span class="f">Le bouton ⧉ recopie le lien, × le supprime. Les liens partent dans l\'export ' +
+    'JSON et CSV, et servent au batch du soir.</span>'],
   reglages: ['Ces réglages pilotent tous les calculs',
     'Aucun taux n\'est figé dans l\'app : change, fret maritime, fret aérien, TVA, commission et marge cible ' +
     'se modifient ici et s\'appliquent immédiatement à toutes les fiches.' +
@@ -1331,7 +1425,7 @@ const ENRICH_FIELDS = ['prix1688', 'concurrentsFR', 'codeSH', 'tauxDroits', 'obl
                        'risqueContrefacon', 'scoreGlobal', 'transcription'];
 const USER_FIELDS = ['nom', 'categorie', 'stand', 'geo', 'prixUnitaireRMB', 'paliers', 'moq',
                      'delaiJours', 'personnalisation', 'pcsParCarton', 'cartonL', 'cartonW',
-                     'cartonH', 'cartonPoidsKg', 'vendeur', 'statut', 'priorite'];
+                     'cartonH', 'cartonPoidsKg', 'vendeur', 'statut', 'priorite', 'liens'];
 
 function download(blob, name) {
   const u = URL.createObjectURL(blob);
@@ -1398,7 +1492,8 @@ const CSV_COLS = [
   ['prixEUR', (p, r) => r.prixUnitaireEUR], ['cbmParPiece', (p, r) => r.cbmParPiece],
   ['coutRendu', (p, r) => r.coutRendu], ['venteMini', (p, r) => r.prixVenteMini],
   ['eurParCBM', (p, r) => r.densiteValeur], ['photos', (p) => (p.photos || []).length],
-  ['transcription', (p) => p.transcription]
+  ['transcription', (p) => p.transcription],
+  ['liens', (p) => (p.liens || []).map((l) => l.url).join(' | ')]
 ];
 function csvCell(v) {
   if (v === null || v === undefined) return '';
@@ -1751,17 +1846,20 @@ async function drainShareInbox() {
     const keys = await inbox.keys();
     if (!keys.length) return;
     const files = [];
+    let lien = null;
     for (const k of keys) {
       const res = await inbox.match(k);
       if (!res) continue;
+      if (k.url.indexOf('_shared-link') >= 0) { lien = (await res.text()).trim(); await inbox.delete(k); continue; }
       const blob = await res.blob();
       const lm = Number(res.headers.get('X-Last-Modified')) || now();
       files.push(new File([blob], 'share.jpg', { type: blob.type || 'image/jpeg', lastModified: lm }));
       await inbox.delete(k);
     }
-    if (!files.length) return;
+    if (!files.length && !lien) return;
     showScreen('capture');
-    await addPhotoFiles(files, 'produit');
+    if (lien && safeUrl(lien)) addLien(lien);
+    if (files.length) await addPhotoFiles(files, 'produit');
   } catch (e) { /* le partage ne doit jamais bloquer l'app */ }
 }
 

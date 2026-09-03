@@ -63,6 +63,10 @@ L'app fonctionne indifféremment à la racine d'un domaine ou dans un sous-dossi
   « Sourcing » : les photos atterrissent dans le formulaire de capture.
 - Seule une photo est obligatoire. Le bâtiment et l'étage sont pré-remplis avec les
   derniers saisis.
+- Section **Liens** : colle l'URL d'un agent (LoveGoBuy, Weidian, CNFans…), d'une
+  fiche 1688 ou Taobao pour retrouver et recommander l'article sans repasser au
+  stand. Sur Android, partager la page produit depuis le navigateur vers
+  « Sourcing » ajoute le lien directement. Seuls `http`/`https` sont acceptés.
 - Le prix se saisit en RMB ; la conversion en euros s'affiche juste sous le champ,
   au taux des réglages. Idem sur chaque palier de prix.
 - Chaque abréviation (PU €, €/CBM, coût rendu, vente mini, MOQ, CBM, diviseur

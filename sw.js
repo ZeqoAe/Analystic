@@ -62,6 +62,13 @@ async function handleShare(request) {
     const inbox = await caches.open(SHARE_INBOX);
     const keys = await inbox.keys();
     await Promise.all(keys.map((k) => inbox.delete(k)));
+    // Partage d'une page produit (LoveGoBuy, 1688, Taobao...) : Android envoie
+    // l'URL dans text ou url. On la range a cote des photos.
+    const lien = [form.get('url'), form.get('text'), form.get('title')]
+      .map((v) => String(v || ''))
+      .map((v) => (v.match(/https?:\/\/\S+/) || [])[0])
+      .filter(Boolean)[0];
+    if (lien) await inbox.put(new Request('./_shared-link?t=' + Date.now()), new Response(lien));
     let i = 0;
     for (const file of files) {
       await inbox.put(

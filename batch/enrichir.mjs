@@ -252,6 +252,11 @@ function preparer(exportPath) {
     md.push('', '**Contrefacon :** ' + cf.niveau + (cf.motif ? ' — ' + cf.motif : ''));
     md.push('', '**Piste code SH :** ' + (sh ? '`' + sh.code + '` ' + sh.libelle + ' — droits indicatifs ' +
       fmt(sh.droits * 100, 1) + ' % — **a confirmer sur RITA**' : 'aucune piste, a chercher'), '');
+    if ((p.liens || []).length) {
+      md.push('**Liens releves sur place :**');
+      p.liens.forEach((l) => md.push('- ' + l.url));
+      md.push('');
+    }
     md.push('**Recherches :**');
     liens(p).forEach(([k, u]) => md.push('- [' + k + '](' + u + ')'));
     md.push('');

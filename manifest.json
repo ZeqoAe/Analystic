@@ -11,12 +11,36 @@
   "theme_color": "#0b1220",
   "lang": "fr",
   "dir": "ltr",
-  "categories": ["business", "productivity", "shopping"],
+  "categories": [
+    "business",
+    "productivity",
+    "shopping"
+  ],
   "icons": [
-    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "share_target": {
     "action": "./share-target",
@@ -26,12 +50,38 @@
       "title": "title",
       "text": "text",
       "files": [
-        { "name": "photos", "accept": ["image/*"] }
-      ]
+        {
+          "name": "photos",
+          "accept": [
+            "image/*"
+          ]
+        }
+      ],
+      "url": "url"
     }
   },
   "shortcuts": [
-    { "name": "Nouveau produit", "short_name": "Nouveau", "url": "./?screen=capture", "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }] },
-    { "name": "Liste", "short_name": "Liste", "url": "./?screen=list", "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }] }
+    {
+      "name": "Nouveau produit",
+      "short_name": "Nouveau",
+      "url": "./?screen=capture",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Liste",
+      "short_name": "Liste",
+      "url": "./?screen=list",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
