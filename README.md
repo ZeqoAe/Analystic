@@ -10,6 +10,19 @@ Android et iOS, aucune dépendance, aucun build step.
 Site servi sur <https://zeqoae.github.io/Analystic/>. Le fichier `.nojekyll` évite
 que Pages ne fasse passer les fichiers par Jekyll. Chaque push sur `main` redéploie.
 
+### Comment une mise à jour atteint les téléphones
+
+Le service worker sert la coquille depuis le cache (instantané, hors ligne) puis
+revalide `index.html` en arrière-plan. S'il a changé, la nouvelle version est mise
+en cache, un drapeau est posé et un bandeau « Nouvelle version » s'affiche ; la page
+courante n'est jamais rechargée sans que l'utilisateur le demande. La bascule se
+fait donc en deux ouvertures avec réseau : la première télécharge, la seconde active.
+
+Ne pas compter sur un changement de `sw.js` pour diffuser une mise à jour : le
+navigateur ne détecte un nouveau service worker que si ce fichier change octet pour
+octet. Bump `CACHE` uniquement quand `manifest.json` ou les icônes changent, car
+seuls ces fichiers-là ne sont pas revalidés.
+
 **Netlify Drop** (secours, sans compte GitHub) : glisser le dossier contenant les
 5 fichiers sur <https://app.netlify.com/drop>. Sans connexion, l'URL est temporaire.
 

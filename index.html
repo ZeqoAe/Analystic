@@ -1802,7 +1802,32 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 window.addEventListener('beforeunload', releasePhotoUrls);
 
+/* Une seule banniere de mise a jour, quelle que soit la source du signal :
+   nouveau service worker, ou index.html revalide en arriere-plan par le SW. */
+let updateWaiting = null;
+function showUpdateBanner() {
+  if ($('#banner-update')) return;
+  const b = document.createElement('div');
+  b.id = 'banner-update';
+  b.className = 'banner update';
+  b.innerHTML = '<span>Nouvelle version disponible.</span><button type="button" class="sm">Recharger</button>';
+  b.querySelector('button').addEventListener('click', () => {
+    if (updateWaiting) updateWaiting.postMessage({ type: 'SKIP_WAITING' });
+    location.reload();
+  });
+  $('#banners').appendChild(b);
+}
 if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'UPDATE_READY') showUpdateBanner();
+  });
+  // Au demarrage on demande au SW s'il a deja telecharge une nouvelle version :
+  // son message peut avoir ete emis avant que cette page n'existe.
+  navigator.serviceWorker.ready.then(() => {
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'IS_UPDATE_READY' });
+    }
+  }).catch(() => {});
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
       reg.addEventListener('updatefound', () => {
@@ -1810,16 +1835,14 @@ if ('serviceWorker' in navigator) {
         if (!nw) return;
         nw.addEventListener('statechange', () => {
           if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-            const b = document.createElement('div');
-            b.className = 'banner update';
-            b.innerHTML = '<span>Nouvelle version disponible.</span><button type="button" class="sm">Recharger</button>';
-            b.querySelector('button').addEventListener('click', () => {
-              nw.postMessage({ type: 'SKIP_WAITING' }); location.reload();
-            });
-            $('#banners').appendChild(b);
+            updateWaiting = nw;
+            showUpdateBanner();
           }
         });
       });
+      // l'app reste ouverte des heures sur le terrain : on revient voir de temps
+      // en temps s'il y a du neuf, sans jamais bloquer sur le reseau
+      setInterval(() => { reg.update().catch(() => {}); }, 30 * 60 * 1000);
     }).catch(() => { /* http local : l'app marche, sans offline */ });
   });
 }
