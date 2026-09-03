@@ -381,7 +381,7 @@ button.tile{display:block;width:100%;font-family:inherit;color:var(--txt)}
   <div class="card">
     <h2>Taux &amp; coûts<button type="button" class="ibtn" data-info="reglages" aria-label="Aide">i</button></h2>
     <div class="row c2">
-      <div><label>Taux : RMB pour 1 €<button type="button" class="ibtn" data-info="taux" aria-label="Aide">i</button></label><input id="c_taux" class="mono" inputmode="decimal"></div>
+      <div><label>Taux : RMB pour 1 €<button type="button" class="ibtn" data-info="taux" aria-label="Aide">i</button></label><input id="c_taux" class="mono" inputmode="decimal"><div class="conv mut" id="c_taux_hint"></div></div>
       <div><label>Fret mer €/CBM</label><input id="c_mer" class="mono" inputmode="decimal"></div>
     </div>
     <div class="row c2">
@@ -1022,9 +1022,11 @@ const INFO = {
     '100 pcs à 12 RMB, 1 000 pcs à 9 RMB, etc.' +
     '<span class="f">Sert le soir à comparer les fournisseurs à quantité égale.</span>'],
   taux: ['Taux de change',
-    'Le nombre de <b>RMB pour 1 €</b>. Si 1 € = 7,80 RMB, saisis 7,80.' +
-    '<span class="f">À vérifier avant le départ. Modifie-le ici et toutes les fiches déjà saisies ' +
-    'sont recalculées, rien n\'est figé.</span>'],
+    'Le nombre de <b>RMB pour 1 €</b>. Si 1 € = 7,80 RMB, saisis <b>7,80</b>.' +
+    '<span class="f">Attention au sens : Google et les convertisseurs affichent l\'inverse ' +
+    '(« 1 renminbi = 0,128 euro »). Dans ce cas, saisis 1 ÷ 0,128 = 7,80, pas 0,128. ' +
+    'L\'app te prévient si tu saisis une valeur inférieure à 1.</span>' +
+    '<span class="f">Modifie-le ici et toutes les fiches déjà saisies sont recalculées.</span>'],
   divvol: ['Diviseur volumétrique',
     'Sert à calculer le poids taxable en aérien : un colis volumineux mais léger est facturé à son volume.' +
     '<span class="f">(L × l × H en cm) ÷ 6000 = poids volumétrique en kg. 6000 est la valeur usuelle ; ' +
@@ -1561,9 +1563,37 @@ const CFG_FIELDS = { tauxRMBEUR: '#c_taux', fretMaritimeEuroParCBM: '#c_mer',
 function configToForm() {
   for (const k in CFG_FIELDS) $(CFG_FIELDS[k]).value = S.cfg[k];
   $('#c_cats').value = (S.cfg.categories || []).join(', ');
+  renderTauxHint();
 }
+/* Les convertisseurs en ligne affichent 1 RMB = 0,128 € ; l'app attend l'inverse.
+   Saisir 0,13 au lieu de 7,80 fausse tout, en silence : on montre les deux sens. */
+function renderTauxHint() {
+  const v = num($('#c_taux').value), el = $('#c_taux_hint');
+  if (v === null || v <= 0) { el.className = 'conv mut'; el.textContent = ''; return; }
+  if (v < 1) {
+    el.className = 'conv';
+    el.style.color = 'var(--orange)';
+    el.textContent = '⚠ ' + fmt(v, 4) + ' ressemble au taux inverse — attendu ≈ ' + fmt(1 / v, 2) + '';
+    return;
+  }
+  el.style.color = '';
+  el.className = 'conv mut';
+  el.textContent = '1 € = ' + fmt(v, 2) + ' RMB  ·  1 RMB = ' + fmt(1 / v, 4, ' €');
+}
+$('#c_taux').addEventListener('input', renderTauxHint);
 $('#btn-cfg-save').addEventListener('click', async () => {
   const next = Object.assign({}, S.cfg);
+  // garde-fou : un taux < 1 est presque surement l'inverse (0,128 au lieu de 7,80)
+  const t = num($('#c_taux').value);
+  if (t !== null && t > 0 && t < 1) {
+    const inv = 1 / t;
+    if (confirm(fmt(t, 4) + ' ressemble au taux inverse (euros par RMB).\n\n' +
+                'OK : enregistrer ' + fmt(inv, 2) + ' RMB pour 1 €.\n' +
+                'Annuler : garder ' + fmt(t, 4) + ' tel quel.')) {
+      $('#c_taux').value = inv.toFixed(4);
+      renderTauxHint();
+    }
+  }
   for (const k in CFG_FIELDS) {
     const v = num($(CFG_FIELDS[k]).value);
     if (v !== null) next[k] = v;

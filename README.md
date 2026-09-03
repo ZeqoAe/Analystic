@@ -31,8 +31,12 @@ L'app fonctionne indifféremment à la racine d'un domaine ou dans un sous-dossi
 
 ## Premier lancement
 
-1. Onglet **Réglages** → vérifier taux RMB→EUR, fret €/CBM, fret €/kg, TVA,
+1. Onglet **Réglages** → vérifier taux de change, fret €/CBM, fret €/kg, TVA,
    commission, marge cible. Rien n'est codé en dur.
+   Le taux se saisit en **RMB pour 1 €** (ex. 7,78), c'est-à-dire l'inverse de ce
+   qu'affichent Google et les convertisseurs (« 1 renminbi = 0,128 euro »). Le champ
+   montre les deux sens et refuse silencieusement de laisser passer une valeur
+   inférieure à 1 sans confirmation.
 2. Toucher **5 fois** la ligne de version en bas des réglages → bouton caché
    « Injecter 8 produits de test » (dont 2 quasi-doublons et un produit à batterie),
    pour valider tris, alertes et doublons. Le bouton « Effacer toutes les données »
