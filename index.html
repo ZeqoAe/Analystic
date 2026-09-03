@@ -18,13 +18,21 @@
   --txt:#e8eefc; --mut:#8ea0c0; --acc:#ffb020; --acc2:#3ddc97;
   --red:#ff5c5c; --orange:#ff9838; --blue:#5aa9ff;
   --pad:12px;
+  /* Encoche / Dynamic Island / barre home. Passees en variables pour etre
+     surchargeables en test : env() seul n'est pas simulable. */
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
 }
+/* Bandeau opaque derriere la barre d'etat : sans lui, le contenu qui defile
+   apparait derriere l'heure et la batterie en mode standalone. */
+#safetop{position:fixed;top:0;left:0;right:0;height:var(--sat);background:var(--bg);z-index:60}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;max-width:100%;overscroll-behavior-y:contain}
 body{
   background:var(--bg); color:var(--txt);
   font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
-  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+  padding-top:var(--sat);
+  padding-bottom:calc(84px + var(--sab));
 }
 h1,h2,h3{margin:0;font-weight:650}
 a{color:var(--blue)}
@@ -32,14 +40,14 @@ a{color:var(--blue)}
 
 /* ---------- barre de calcul permanente ---------- */
 #calcbar{
-  position:sticky; top:0; z-index:40;
+  position:sticky; top:var(--sat); z-index:40;
   background:linear-gradient(180deg,#0f1a2e,#0d1526);
   border-bottom:1px solid var(--line);
-  padding:calc(6px + env(safe-area-inset-top)) 8px 6px;
+  padding:6px 8px;
 }
 #calcgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 4px;text-align:center;min-width:0}
-.tile .k{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .k{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.02em;line-height:1.25;height:26px;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:0 3px;flex-wrap:wrap}
 .tile .v{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile.warn{border-color:var(--orange)} .tile.warn .v{color:var(--orange)}
 #calcsub{font-size:11px;color:var(--mut);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
@@ -53,7 +61,7 @@ a{color:var(--blue)}
 .banner{display:flex;gap:8px;align-items:center;padding:9px 12px;font-size:13px;border-bottom:1px solid var(--line)}
 .banner.export{background:#3a2a12;color:#ffd9a8}
 .banner.update{background:#122c3a;color:#bfe6ff}
-.banner button{margin-left:auto;flex:none}
+.banner button{margin-left:auto;flex:none;min-height:44px;white-space:nowrap}
 #dupbar{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:#2a2410;border:1px solid var(--acc);color:#ffe6b8;font-size:13px;display:flex;align-items:center;gap:8px}
 
 /* ---------- structure ---------- */
@@ -133,41 +141,68 @@ details[open] > summary::after{content:'–'}
 details .inner{padding:0 12px 12px}
 #tabbar{
   position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
-  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  padding:8px 10px calc(8px + var(--sab));
   background:rgba(11,18,32,.96);border-top:1px solid var(--line);backdrop-filter:blur(8px)
 }
 #tabbar button{flex-direction:column;font-size:12px;min-height:52px;background:transparent;border:0;color:var(--mut);padding:4px}
 #tabbar button .i{display:block;font-size:19px;line-height:1.25}
 #tabbar button.on{color:var(--acc)}
 #toast{
-  position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  position:fixed;left:50%;bottom:calc(96px + var(--sab));transform:translateX(-50%);
   background:#0a1424;border:1px solid var(--acc);color:var(--txt);padding:10px 16px;border-radius:22px;
   font-size:14px;z-index:80;max-width:92vw;text-align:center;transition:opacity .18s;pointer-events:none
 }
-#savebar{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));padding:14px 0 4px;z-index:30;background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.95) 45%)}
+#savebar{position:sticky;bottom:calc(84px + var(--sab));padding:14px 0 4px;z-index:30;background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.95) 45%)}
 .mono{font-variant-numeric:tabular-nums}
 .mut{color:var(--mut)}
 .sm{font-size:13px}
 hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 #seedbtn{margin-top:10px}
+
+/* pastille d'aide : petite a l'oeil, 44 px au doigt grace au ::after */
+.ibtn{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:17px;height:17px;min-height:17px;padding:0;border-radius:50%;border:1px solid var(--mut);
+  background:transparent;color:var(--mut);font:italic 700 11px/1 Georgia,serif;vertical-align:middle;margin-left:5px}
+/* zone tactile elargie a l'horizontale : l'etendre vers le bas volerait des taps
+   au champ de saisie situe juste dessous, ce qui est pire que la pastille etroite. */
+.ibtn::after{content:'';position:absolute;left:50%;top:50%;width:46px;height:26px;transform:translate(-50%,-50%)}
+.tile{position:relative}
+.nw{white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.ibadge{flex:none;width:13px;height:13px;border-radius:50%;border:1px solid var(--mut);
+  color:var(--mut);font:italic 700 9px/12px Georgia,serif;text-align:center;opacity:.85}
+button.tile{display:block;width:100%;font-family:inherit;color:var(--txt)}
+
+/* conversion RMB -> EUR affichee sous le champ de saisie */
+.conv{font-size:13px;color:var(--acc2);margin-top:5px;min-height:18px}
+.conv.mut{color:var(--mut)}
+
+#sheet{position:fixed;inset:0;z-index:90;background:rgba(4,8,16,.66);display:flex;align-items:flex-end}
+#sheet .box{width:100%;max-height:82vh;overflow:auto;background:var(--card);
+  border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:18px 16px calc(16px + var(--sab))}
+#sheet h3{font-size:18px;margin-bottom:10px}
+#sheet .txt{font-size:15px;color:#cfdcf3;line-height:1.55;margin-bottom:16px}
+#sheet .txt b{color:var(--acc)}
+#sheet .txt .f{display:block;margin-top:8px;font-size:13px;color:var(--mut)}
 </style>
 </head>
 <body>
+<div id="safetop"></div>
 
 <div id="banners"></div>
 
 <div id="calcbar">
   <div id="calcgrid">
-    <div class="tile"><div class="k">PU €</div><div class="v mono" id="t_pu">—</div></div>
-    <div class="tile" id="tile_cbm"><div class="k">€/CBM</div><div class="v mono" id="t_cbm">—</div></div>
-    <div class="tile"><div class="k">Coût rendu</div><div class="v mono" id="t_cout">—</div></div>
-    <div class="tile"><div class="k">Vente mini</div><div class="v mono" id="t_vente">—</div></div>
+    <button type="button" class="tile" data-info="pu"><div class="k"><span class="nw">PU €<span class="ibadge">i</span></span></div><div class="v mono" id="t_pu">—</div></button>
+    <button type="button" class="tile" id="tile_cbm" data-info="cbm"><div class="k"><span class="nw">€/CBM<span class="ibadge">i</span></span></div><div class="v mono" id="t_cbm">—</div></button>
+    <button type="button" class="tile" data-info="cout"><div class="k">Coût <span class="nw">rendu<span class="ibadge">i</span></span></div><div class="v mono" id="t_cout">—</div></button>
+    <button type="button" class="tile" data-info="vente"><div class="k">Vente <span class="nw">mini<span class="ibadge">i</span></span></div><div class="v mono" id="t_vente">—</div></button>
   </div>
   <div id="calcsub">
     <span>CBM/pce <b class="mono" id="s_cbmp">—</b></span>
     <span>Fret mer <b class="mono" id="s_mer">—</b></span>
     <span>Fret air <b class="mono" id="s_air">—</b></span>
     <span>Droits+TVA <b class="mono" id="s_tax">—</b></span>
+    <span><button type="button" class="ibtn" data-info="detail" aria-label="Détail du calcul">i</button></span>
   </div>
   <div id="alerts"></div>
 </div>
@@ -197,9 +232,10 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   <div class="card">
     <h2>2 · Prix</h2>
     <div class="row c2">
-      <div><label>Prix unitaire RMB</label><input id="f_prixRMB" class="big mono" inputmode="decimal" enterkeyhint="next" placeholder="0"></div>
-      <div><label>MOQ (pcs)</label><input id="f_moq" class="big mono" inputmode="numeric" enterkeyhint="next" placeholder="0"></div>
+      <div><label>Prix unitaire RMB<button type="button" class="ibtn" data-info="rmb" aria-label="Aide">i</button></label><input id="f_prixRMB" class="big mono" inputmode="decimal" enterkeyhint="next" placeholder="0"></div>
+      <div><label>MOQ (pcs)<button type="button" class="ibtn" data-info="moq" aria-label="Aide">i</button></label><input id="f_moq" class="big mono" inputmode="numeric" enterkeyhint="next" placeholder="0"></div>
     </div>
+    <div class="conv" id="conv_prix"></div>
   </div>
 
   <!-- 3. STAND -->
@@ -235,7 +271,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 
   <!-- 5. CARTON -->
   <div class="card">
-    <h2>5 · Carton</h2>
+    <h2>5 · Carton<button type="button" class="ibtn" data-info="carton" aria-label="Aide">i</button></h2>
     <div class="row c2">
       <div><label>Pcs / carton</label><input id="f_pcs" class="mono" inputmode="numeric" placeholder="0"></div>
       <div><label>Poids carton (kg)</label><input id="f_kg" class="mono" inputmode="decimal" placeholder="0"></div>
@@ -287,7 +323,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
         </select></div>
       </div>
       <div class="chk"><input type="checkbox" id="f_perso"><label for="f_perso">Personnalisation possible (logo, couleur)</label></div>
-      <label style="margin-top:8px">Paliers de prix</label>
+      <label style="margin-top:8px">Paliers de prix<button type="button" class="ibtn" data-info="paliers" aria-label="Aide">i</button></label>
       <div id="paliers"></div>
       <button type="button" class="sm ghost wide" id="btn-palier" style="margin-top:8px">+ Palier</button>
     </div>
@@ -343,14 +379,14 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   <h1 style="font-size:19px;margin-bottom:10px">Réglages</h1>
 
   <div class="card">
-    <h2>Taux &amp; coûts</h2>
+    <h2>Taux &amp; coûts<button type="button" class="ibtn" data-info="reglages" aria-label="Aide">i</button></h2>
     <div class="row c2">
-      <div><label>Taux RMB→EUR</label><input id="c_taux" class="mono" inputmode="decimal"></div>
+      <div><label>Taux : RMB pour 1 €<button type="button" class="ibtn" data-info="taux" aria-label="Aide">i</button></label><input id="c_taux" class="mono" inputmode="decimal"></div>
       <div><label>Fret mer €/CBM</label><input id="c_mer" class="mono" inputmode="decimal"></div>
     </div>
     <div class="row c2">
       <div><label>Fret air €/kg</label><input id="c_air" class="mono" inputmode="decimal"></div>
-      <div><label>Div. volumétrique</label><input id="c_div" class="mono" inputmode="numeric"></div>
+      <div><label>Div. volumétrique<button type="button" class="ibtn" data-info="divvol" aria-label="Aide">i</button></label><input id="c_div" class="mono" inputmode="numeric"></div>
     </div>
     <div class="row c3">
       <div><label>TVA</label><input id="c_tva" class="mono" inputmode="decimal"></div>
@@ -359,7 +395,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
     </div>
     <div class="row" style="margin-top:8px"><div><label>Catégories (séparées par des virgules)</label><textarea id="c_cats"></textarea></div></div>
     <button class="primary wide" type="button" id="btn-cfg-save" style="margin-top:10px">Enregistrer les réglages</button>
-    <div class="sm mut" style="margin-top:8px">TVA 0.20 = 20 %. Marge 0.35 = 35 %.</div>
+    <div class="sm mut" style="margin-top:8px">TVA 0.20 = 20 %. Marge 0.35 = 35 %. Le taux est le nombre de RMB pour 1 € (ex. 7,8).</div>
   </div>
 
   <div class="card">
@@ -402,6 +438,14 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 </nav>
 
 <div id="toast" class="hidden"></div>
+
+<div id="sheet" class="hidden" role="dialog" aria-modal="true">
+  <div class="box">
+    <h3 id="sheet-t"></h3>
+    <div class="txt" id="sheet-b"></div>
+    <button type="button" class="primary wide" id="sheet-x">Compris</button>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -765,15 +809,18 @@ function fillSelect(sel, values, extraFirst) {
 function renderPaliers() {
   const box = $('#paliers');
   box.innerHTML = (S.current.paliers || []).map((p, i) =>
-    '<div class="row c3" data-p="' + i + '" style="align-items:end">' +
+    '<div data-p="' + i + '" style="margin-bottom:10px">' +
+    '<div class="row c3" style="align-items:end;margin-bottom:0">' +
     '<div><label>Qté</label><input class="mono" inputmode="numeric" data-pq="' + i + '" value="' + esc(p.qte === null || p.qte === undefined ? '' : p.qte) + '"></div>' +
     '<div><label>Prix RMB</label><input class="mono" inputmode="decimal" data-pp="' + i + '" value="' + esc(p.prixRMB === null || p.prixRMB === undefined ? '' : p.prixRMB) + '"></div>' +
-    '<div><button type="button" class="ghost" data-pd="' + i + '">×</button></div></div>').join('');
+    '<div><button type="button" class="ghost" data-pd="' + i + '">×</button></div></div>' +
+    '<div class="conv" data-pc="' + i + '"></div></div>').join('');
+  (S.current.paliers || []).forEach((_, i) => updatePalierConv(i));
 }
 $('#paliers').addEventListener('input', (e) => {
   const q = e.target.dataset.pq, p = e.target.dataset.pp;
-  if (q !== undefined) S.current.paliers[+q].qte = num(e.target.value);
-  if (p !== undefined) S.current.paliers[+p].prixRMB = num(e.target.value);
+  if (q !== undefined) { S.current.paliers[+q].qte = num(e.target.value); updatePalierConv(+q); }
+  if (p !== undefined) { S.current.paliers[+p].prixRMB = num(e.target.value); updatePalierConv(+p); }
 });
 $('#paliers').addEventListener('click', (e) => {
   const d = e.target.dataset.pd; if (d === undefined) return;
@@ -864,7 +911,31 @@ function refreshCalc() {
   if (p.risqueContrefacon === 'high') al.push(['red', 'Risque contrefaçon élevé.']);
   if (p.risqueContrefacon === 'medium') al.push(['', 'Risque contrefaçon moyen.']);
   $('#alerts').innerHTML = al.map((a) => '<div class="alert ' + a[0] + '">' + esc(a[1]) + '</div>').join('');
+  renderConversions(p, r);
   return r;
+}
+/* Conversion RMB -> EUR affichee la ou le prix se saisit : le bandeau du haut
+   est trop loin du champ pour servir de convertisseur. */
+function renderConversions(p, r) {
+  const taux = num(S.cfg.tauxRMBEUR);
+  const c = $('#conv_prix');
+  if (r.prixUnitaireEUR === null) {
+    c.className = 'conv mut';
+    c.textContent = taux ? 'Taux : ' + fmt(taux, 2) + ' RMB pour 1 €' : 'Taux de change à régler dans Réglages';
+  } else {
+    c.className = 'conv';
+    c.textContent = fmt(num(p.prixUnitaireRMB), 2) + ' RMB = ' + fmt(r.prixUnitaireEUR, 2, ' €') +
+                    '  ·  taux ' + fmt(taux, 2);
+  }
+  (p.paliers || []).forEach((_, i) => updatePalierConv(i));
+}
+function updatePalierConv(i) {
+  const el = $('[data-pc="' + i + '"]'); if (!el) return;
+  const pal = S.current.paliers[i] || {};
+  const taux = num(S.cfg.tauxRMBEUR), prix = num(pal.prixRMB), qte = num(pal.qte);
+  if (prix === null || !taux) { el.textContent = ''; return; }
+  el.className = 'conv';
+  el.textContent = (qte ? fmt(qte, 0) + ' pcs → ' : '') + fmt(prix / taux, 2, ' €') + ' / pce';
 }
 
 /* --- geolocalisation : jamais en continu, uniquement sur geste utilisateur --- */
@@ -907,6 +978,79 @@ function renderEnrich(p) {
   $('#enrich-body').innerHTML = rows.join('') +
     (c ? '<hr><div class="sm mut" style="margin-bottom:4px">Concurrence FR</div>' + c : '');
 }
+
+/* ---------- aide contextuelle : chaque abreviation est explicable d'un tap ---------- */
+const INFO = {
+  pu: ['PU € — prix unitaire',
+    'Ton prix d\'achat au stand, converti en euros au taux des réglages.' +
+    '<span class="f">Prix RMB ÷ taux. Ne comprend ni transport, ni douane, ni TVA.</span>'],
+  cbm: ['€/CBM — densité de valeur',
+    'Ce qu\'un <b>mètre cube</b> de cette marchandise peut rapporter à la revente. ' +
+    'C\'est le chiffre qui dit si un produit vaut la peine d\'être importé : le conteneur se paie au volume, ' +
+    'pas au nombre de pièces.<span class="f">CBM = mètre cube. Sous 1 500 €/CBM la tuile passe en orange : ' +
+    'le fret maritime mange la marge, un gros produit pas cher ne passe pas.</span>'],
+  cout: ['Coût rendu — prix de revient livré',
+    'Ce que la pièce te coûte réellement une fois arrivée en France : ' +
+    'prix d\'achat + fret + droits de douane + TVA.' +
+    '<span class="f">Le signe ≈ veut dire qu\'une composante manque encore (carton non mesuré, ' +
+    'ou code SH pas encore trouvé) : le chiffre est donc sous-estimé.</span>'],
+  vente: ['Vente mini — prix plancher',
+    'Le prix de vente TTC en dessous duquel tu ne tiens pas ta marge cible, ' +
+    'commission de la marketplace déduite.' +
+    '<span class="f">Coût rendu ÷ (1 − marge cible − commission). Les deux se règlent dans Réglages.</span>'],
+  detail: ['Le détail du calcul, par pièce',
+    '<b>CBM/pce</b> : volume d\'une pièce en mètres cubes.<br>' +
+    '<b>Fret mer</b> : coût maritime d\'une pièce, au volume.<br>' +
+    '<b>Fret air</b> : coût aérien, au poids taxable (le plus grand entre le poids réel et le poids volumétrique).<br>' +
+    '<b>Droits+TVA</b> : taxes à l\'import pour une pièce.' +
+    '<span class="f">Le coût rendu retient le fret maritime, référence d\'un sourcing en conteneur.</span>'],
+  rmb: ['RMB — la monnaie chinoise',
+    'RMB, CNY, yuan et « kuai » désignent la même chose. Saisis le prix tel que le vendeur l\'annonce, ' +
+    'la conversion en euros s\'affiche juste en dessous et se met à jour à chaque frappe.' +
+    '<span class="f">Le taux se règle dans Réglages, il n\'est jamais récupéré sur Internet : ' +
+    'l\'app doit fonctionner en mode avion.</span>'],
+  moq: ['MOQ — quantité minimum',
+    '<b>M</b>inimum <b>O</b>rder <b>Q</b>uantity : le nombre de pièces en dessous duquel le vendeur refuse de produire.' +
+    '<span class="f">C\'est souvent négociable, surtout si tu acceptes ses couleurs ou son packaging existant.</span>'],
+  carton: ['Le carton — la clé du transport',
+    'Nombre de pièces par carton, dimensions extérieures en centimètres et poids brut. ' +
+    'Ces cinq chiffres déterminent le volume, donc le fret, donc la marge.' +
+    '<span class="f">Demande-les systématiquement au vendeur : sans eux, le coût rendu est incomplet ' +
+    'et la tuile €/CBM reste à « — ».</span>'],
+  paliers: ['Paliers de prix',
+    'Le prix baisse par tranche de quantité. Note ce que le vendeur annonce : ' +
+    '100 pcs à 12 RMB, 1 000 pcs à 9 RMB, etc.' +
+    '<span class="f">Sert le soir à comparer les fournisseurs à quantité égale.</span>'],
+  taux: ['Taux de change',
+    'Le nombre de <b>RMB pour 1 €</b>. Si 1 € = 7,80 RMB, saisis 7,80.' +
+    '<span class="f">À vérifier avant le départ. Modifie-le ici et toutes les fiches déjà saisies ' +
+    'sont recalculées, rien n\'est figé.</span>'],
+  divvol: ['Diviseur volumétrique',
+    'Sert à calculer le poids taxable en aérien : un colis volumineux mais léger est facturé à son volume.' +
+    '<span class="f">(L × l × H en cm) ÷ 6000 = poids volumétrique en kg. 6000 est la valeur usuelle ; ' +
+    'certains transporteurs utilisent 5000.</span>'],
+  reglages: ['Ces réglages pilotent tous les calculs',
+    'Aucun taux n\'est figé dans l\'app : change, fret maritime, fret aérien, TVA, commission et marge cible ' +
+    'se modifient ici et s\'appliquent immédiatement à toutes les fiches.' +
+    '<span class="f">Vérifie-les avant le départ : ce sont des valeurs de démarrage, pas des chiffres vérifiés.</span>']
+};
+function openInfo(k) {
+  const e = INFO[k]; if (!e) return;
+  $('#sheet-t').textContent = e[0];
+  $('#sheet-b').innerHTML = e[1];
+  $('#sheet').classList.remove('hidden');
+}
+function closeInfo() { $('#sheet').classList.add('hidden'); }
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-info]');
+  if (!b) return;
+  e.preventDefault();
+  openInfo(b.dataset.info);
+});
+$('#sheet').addEventListener('click', (e) => {
+  if (e.target.id === 'sheet' || e.target.id === 'sheet-x') closeInfo();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInfo(); });
 
 /* ---------- 7. detection de doublon ---------- */
 /* La fonction la plus rentable de l'app : le meme article se vend dans des
@@ -1193,6 +1337,26 @@ function download(blob, name) {
   a.href = u; a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(u); a.remove(); }, 4000);
 }
+/* Sur iPhone en mode ecran d'accueil, <a download> echoue souvent en silence :
+   on passe par la feuille de partage (Enregistrer dans Fichiers, Mail, AirDrop...)
+   quand elle accepte les fichiers, sinon telechargement classique. */
+async function deliver(blob, name) {
+  const type = blob.type || 'application/octet-stream';
+  try {
+    const file = new File([blob], name, { type: type });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: name }); return 'share'; }
+      catch (e) { if (e && e.name === 'AbortError') return 'abort'; }
+    }
+  } catch (e) { /* File non supporte : on retombe sur le telechargement */ }
+  download(blob, name);
+  return 'download';
+}
+function exportDone(mode, quoi) {
+  if (mode === 'abort') { toast('Export annulé — rien n\'a été enregistré', 3500); return false; }
+  toast(mode === 'share' ? quoi + ' : choisis « Enregistrer dans Fichiers »' : quoi + ' exporté', 3500);
+  return true;
+}
 function stamp() {
   const d = new Date(), p = (n) => String(n).padStart(2, '0');
   return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
@@ -1210,9 +1374,9 @@ async function markExported() {
 }
 $('#btn-exp-json').addEventListener('click', async () => {
   S.products = await listProducts();
-  download(new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }),
-           'sourcing-' + stamp() + '.json');
-  await markExported(); toast('JSON exporté');
+  const mode = await deliver(new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }),
+                             'sourcing-' + stamp() + '.json');
+  if (exportDone(mode, 'JSON')) await markExported();
 });
 const CSV_COLS = [
   ['id', (p) => p.id], ['createdAt', (p) => new Date(p.createdAt || 0).toISOString()],
@@ -1246,9 +1410,9 @@ $('#btn-exp-csv').addEventListener('click', async () => {
     const r = compute(p, S.cfg);
     lines.push(CSV_COLS.map((c) => csvCell(c[1](p, r))).join(';'));
   }
-  download(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }),
-           'sourcing-' + stamp() + '.csv');
-  await markExported(); toast('CSV exporté');
+  const mode = await deliver(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }),
+                             'sourcing-' + stamp() + '.csv');
+  if (exportDone(mode, 'CSV')) await markExported();
 });
 
 /* --- ZIP "store" (sans compression) : les JPEG sont deja compresses --- */
@@ -1311,8 +1475,9 @@ $('#btn-exp-zip').addEventListener('click', async () => {
     seen[name] = 1;
     entries.push({ name: name, data: new Uint8Array(await b.blob.arrayBuffer()) });
   }
-  download(zipStore(entries), 'photos-' + stamp() + '.zip');
-  toast(entries.length + ' photos exportées');
+  const mode = await deliver(zipStore(entries), 'photos-' + stamp() + '.zip');
+  if (mode !== 'abort') toast(entries.length + ' photos exportées', 3500);
+  else toast('Export annulé', 3000);
 });
 
 /* --- import : fusion par id, sans ecraser une saisie locale plus recente --- */
@@ -1383,9 +1548,10 @@ async function refreshExportReminder() {
     b.querySelector('button').addEventListener('click', () => $('#btn-exp-json').click());
     $('#banners').appendChild(b);
   }
+  const p = n + (n > 1 ? ' produits' : ' produit') + ' sur ce téléphone.';
   b.querySelector('span').textContent = last
-    ? 'Dernier export il y a ' + Math.floor((now() - last) / 3600000) + ' h — ' + n + ' produits en local.'
-    : 'Jamais exporté — ' + n + ' produits en local.';
+    ? 'Dernier export il y a ' + Math.floor((now() - last) / 3600000) + ' h — ' + p
+    : 'Jamais exporté — ' + p;
 }
 
 /* ---------- reglages ---------- */
@@ -1437,11 +1603,12 @@ async function renderStatus() {
   $('#lastexport').textContent = last ? 'Dernier export : ' + new Date(last).toLocaleString('fr-FR')
                                       : 'Jamais exporté.';
   const rows = [
-    ['Produits', n], ['Binaires', blobs.length + ' · ' + kb(bytes)],
+    ['Produits', n], ['Photos + audio', blobs.length + ' · ' + kb(bytes)],
+    ['Données', 'stockées sur cet appareil'],
     ['Stockage', quota || '—'], ['Stockage persistant', persisted],
     ['Service worker', ('serviceWorker' in navigator) ? (navigator.serviceWorker.controller ? 'actif (offline OK)' : 'en attente') : 'non supporté'],
     ['Share target', ('share' in navigator || 'canShare' in navigator) ? 'partage disponible' : 'fallback fichier'],
-    ['Mode', window.matchMedia('(display-mode: standalone)').matches ? 'installée' : 'navigateur']
+    ['Mode', (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) ? 'installée' : 'navigateur']
   ];
   $('#status-body').innerHTML = rows.map((r) =>
     '<div class="kv"><span class="k">' + r[0] + '</span><span class="v">' + esc(r[1]) + '</span></div>').join('') +
@@ -1634,7 +1801,9 @@ init().catch((e) => { toast('Erreur de démarrage : ' + e.message, 8000); });
    - OCR des cartes de visite (v2)
    - comparateur multi-fournisseurs cote a cote (v2)
    - backend + sync multi-appareils, suivi echantillons/commandes (v2)
-   - carte des stands (v1) : necessite des tuiles hors-ligne, non triviales
+   - taux de change recupere en ligne : ecarte volontairement. L'app doit tourner
+    en mode avion et derriere le Great Firewall ; le taux se saisit dans Reglages.
+  - carte des stands (v1) : necessite des tuiles hors-ligne, non triviales
    - mode "batterie faible" : inutile ici, aucune geoloc continue n'est lancee,
      la position n'est prise que sur appui explicite du bouton.
    - Background Sync one-shot : rien a synchroniser tant qu'il n'y a pas de

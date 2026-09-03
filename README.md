@@ -46,6 +46,10 @@ L'app fonctionne indifféremment à la racine d'un domaine ou dans un sous-dossi
   « Sourcing » : les photos atterrissent dans le formulaire de capture.
 - Seule une photo est obligatoire. Le bâtiment et l'étage sont pré-remplis avec les
   derniers saisis.
+- Le prix se saisit en RMB ; la conversion en euros s'affiche juste sous le champ,
+  au taux des réglages. Idem sur chaque palier de prix.
+- Chaque abréviation (PU €, €/CBM, coût rendu, vente mini, MOQ, CBM, diviseur
+  volumétrique…) s'explique d'un tap sur sa pastille ⓘ.
 - Le bandeau du haut recalcule en direct : PU €, €/CBM, coût rendu, prix de vente
   mini. Sous 1 500 €/CBM, la tuile passe en orange : le fret maritime mange la marge.
 - Pendant la saisie du nom, un bandeau signale un produit similaire déjà vu, avec son
@@ -60,7 +64,10 @@ jamais écrasées et les photos locales sont conservées. Un bandeau rappelle l'
 au-delà de 6 h.
 
 Export CSV (tableur) et ZIP des photos (`{stand}_{id}_{role}.jpg`) également
-disponibles.
+disponibles. Sur iPhone, les exports passent par la feuille de partage iOS
+(« Enregistrer dans Fichiers », Mail, AirDrop) : un téléchargement classique
+échoue souvent en mode écran d'accueil. Si le partage est annulé, l'export n'est
+pas comptabilisé et le rappel reste affiché.
 
 ## Périmètre
 
