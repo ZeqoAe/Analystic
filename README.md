@@ -4,16 +4,23 @@ App de saisie rapide de produits sur les marchés de Shenzhen (Huaqiangbei, Futi
 marchés de gros). Fonctionne **100 % hors ligne**, s'installe sur l'écran d'accueil
 Android et iOS, aucune dépendance, aucun build step.
 
-## Déploiement (2 minutes)
+## Déploiement
 
-1. Ouvrir <https://app.netlify.com/drop>
-2. Y glisser **le dossier** contenant les 5 fichiers ci-dessous.
-3. Ouvrir l'URL HTTPS fournie sur le téléphone.
-4. **Android / Chrome** : menu ⋮ → « Installer l'application » (WebAPK : icône dans
-   le tiroir, pas de barre d'URL, stockage persistant accordé).
-   **iOS / Safari** : Partager → « Sur l'écran d'accueil ».
+**GitHub Pages** (en place) : Settings → Pages → source `main` / racine.
+Site servi sur <https://zeqoae.github.io/Analystic/>. Le fichier `.nojekyll` évite
+que Pages ne fasse passer les fichiers par Jekyll. Chaque push sur `main` redéploie.
+
+**Netlify Drop** (secours, sans compte GitHub) : glisser le dossier contenant les
+5 fichiers sur <https://app.netlify.com/drop>. Sans connexion, l'URL est temporaire.
+
+Puis, sur le téléphone :
+- **Android / Chrome** : menu ⋮ → « Installer l'application » (WebAPK : icône dans
+  le tiroir, pas de barre d'URL, stockage persistant accordé).
+- **iOS / Safari** : Partager → « Sur l'écran d'accueil ». Premier lancement avec du
+  réseau pour que le service worker remplisse son cache, ensuite le mode avion passe.
 
 HTTPS est obligatoire : sans lui, ni service worker, ni géolocalisation, ni installation.
+L'app fonctionne indifféremment à la racine d'un domaine ou dans un sous-dossier.
 
 | Fichier | Rôle |
 |---|---|
