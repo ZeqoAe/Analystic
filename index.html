@@ -1,0 +1,1646 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<title>Sourcing Shenzhen</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sourcing">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" href="./icon-192.png">
+<style>
+:root{
+  --bg:#0b1220; --card:#151f33; --card2:#1c2942; --line:#2a3a58;
+  --txt:#e8eefc; --mut:#8ea0c0; --acc:#ffb020; --acc2:#3ddc97;
+  --red:#ff5c5c; --orange:#ff9838; --blue:#5aa9ff;
+  --pad:12px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;max-width:100%;overscroll-behavior-y:contain}
+body{
+  background:var(--bg); color:var(--txt);
+  font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+h1,h2,h3{margin:0;font-weight:650}
+a{color:var(--blue)}
+.hidden{display:none !important}
+
+/* ---------- barre de calcul permanente ---------- */
+#calcbar{
+  position:sticky; top:0; z-index:40;
+  background:linear-gradient(180deg,#0f1a2e,#0d1526);
+  border-bottom:1px solid var(--line);
+  padding:calc(6px + env(safe-area-inset-top)) 8px 6px;
+}
+#calcgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 4px;text-align:center;min-width:0}
+.tile .k{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .v{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile.warn{border-color:var(--orange)} .tile.warn .v{color:var(--orange)}
+#calcsub{font-size:11px;color:var(--mut);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#alerts{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.alert{font-size:12px;padding:6px 9px;border-radius:8px;background:#3a2a12;border:1px solid var(--orange);color:#ffd9a8}
+.alert.red{background:#3a1616;border-color:var(--red);color:#ffc4c4}
+.alert.ok{background:#123024;border-color:var(--acc2);color:#b6f0d7}
+
+/* ---------- bandeaux ---------- */
+#banners{position:relative;z-index:45}
+.banner{display:flex;gap:8px;align-items:center;padding:9px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+.banner.export{background:#3a2a12;color:#ffd9a8}
+.banner.update{background:#122c3a;color:#bfe6ff}
+.banner button{margin-left:auto;flex:none}
+#dupbar{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:#2a2410;border:1px solid var(--acc);color:#ffe6b8;font-size:13px;display:flex;align-items:center;gap:8px}
+
+/* ---------- structure ---------- */
+main{padding:var(--pad);max-width:760px;margin:0 auto}
+.screen{display:none} .screen.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.card > h2{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.row{display:grid;gap:8px;margin-bottom:8px}
+.row.c2{grid-template-columns:1fr 1fr}
+.row.c3{grid-template-columns:1fr 1fr 1fr}
+.row.c4{grid-template-columns:repeat(4,1fr)}
+.row:last-child{margin-bottom:0}
+label{display:block;font-size:11px;color:var(--mut);margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+input,select,textarea,button{font-family:inherit;font-size:17px;color:var(--txt)}
+input,select,textarea{
+  width:100%;background:var(--card2);border:1px solid var(--line);border-radius:9px;
+  padding:11px 10px;min-height:46px;appearance:none
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-2px}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 16px) 21px,calc(100% - 11px) 21px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:30px}
+textarea{min-height:70px;font-size:16px}
+input.big{font-size:22px;font-weight:700;min-height:56px;text-align:center}
+.chk{display:flex;align-items:center;gap:10px;min-height:46px}
+.chk input{width:24px;height:24px;min-height:24px;flex:none}
+.chk label{margin:0;font-size:14px;text-transform:none;letter-spacing:0;color:var(--txt)}
+
+button{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:11px 14px;min-height:46px;cursor:pointer}
+button:active{transform:scale(.985)}
+button.primary{background:var(--acc);border-color:var(--acc);color:#20160a;font-weight:750}
+button.ghost{background:transparent}
+button.danger{background:transparent;border-color:var(--red);color:var(--red)}
+button.wide{width:100%}
+button.xl{min-height:60px;font-size:18px;font-weight:700}
+button.sm{min-height:44px;padding:7px 12px;font-size:14px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btnrow > *{flex:1 1 140px}
+
+/* ---------- photos ---------- */
+#gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
+.ph{position:relative;border-radius:10px;overflow:hidden;background:var(--card2);border:1px solid var(--line)}
+.ph img{width:100%;height:96px;object-fit:cover;display:block}
+.ph .miss{height:96px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut);text-align:center;padding:4px}
+.ph select{position:absolute;left:0;bottom:0;width:100%;min-height:28px;padding:2px 4px;font-size:11px;border:0;border-radius:0;background:rgba(6,10,20,.82);background-image:none}
+.ph .del{position:absolute;top:3px;right:3px;min-height:26px;width:26px;padding:0;line-height:1;border-radius:50%;background:rgba(6,10,20,.75);font-size:15px}
+
+/* ---------- liste ---------- */
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-align:left;padding:0;min-height:0;display:block}
+.pcard .thumb{width:100%;height:118px;object-fit:cover;display:block;background:var(--card2)}
+.pcard .nothumb{height:118px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:12px;background:var(--card2)}
+.pcard .b{padding:8px}
+.pcard .n{font-size:14px;font-weight:650;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .m{font-size:11px;color:var(--mut);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--mut);margin:3px 3px 0 0;vertical-align:middle}
+.chip.nouveau{border-color:#4a5f85;color:#bcd2f5}
+.chip.a_creuser{border-color:var(--blue);color:var(--blue)}
+.chip.a_relancer{border-color:var(--acc);color:var(--acc)}
+.chip.valide{border-color:var(--acc2);color:var(--acc2)}
+.chip.ecarte{border-color:#63708c;color:#8c98ad}
+.chip.red{border-color:var(--red);color:var(--red)}
+.chip.orange{border-color:var(--orange);color:var(--orange)}
+.chip.green{border-color:var(--acc2);color:var(--acc2)}
+#filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+#filters .full{grid-column:1/-1}
+.empty{text-align:center;color:var(--mut);padding:40px 16px;font-size:14px}
+
+/* ---------- divers ---------- */
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv .k{color:var(--mut);font-size:13px}
+.kv .v{text-align:right;font-weight:600;min-width:0;word-break:break-word}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+details > summary{padding:13px 12px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;list-style:none;font-weight:650}
+details > summary::-webkit-details-marker{display:none}
+details > summary::after{content:'+';float:right;color:var(--acc);font-size:17px;line-height:1}
+details[open] > summary::after{content:'–'}
+details .inner{padding:0 12px 12px}
+#tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(11,18,32,.96);border-top:1px solid var(--line);backdrop-filter:blur(8px)
+}
+#tabbar button{flex-direction:column;font-size:12px;min-height:52px;background:transparent;border:0;color:var(--mut);padding:4px}
+#tabbar button .i{display:block;font-size:19px;line-height:1.25}
+#tabbar button.on{color:var(--acc)}
+#toast{
+  position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  background:#0a1424;border:1px solid var(--acc);color:var(--txt);padding:10px 16px;border-radius:22px;
+  font-size:14px;z-index:80;max-width:92vw;text-align:center;transition:opacity .18s;pointer-events:none
+}
+#savebar{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));padding:14px 0 4px;z-index:30;background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.95) 45%)}
+.mono{font-variant-numeric:tabular-nums}
+.mut{color:var(--mut)}
+.sm{font-size:13px}
+hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+#seedbtn{margin-top:10px}
+</style>
+</head>
+<body>
+
+<div id="banners"></div>
+
+<div id="calcbar">
+  <div id="calcgrid">
+    <div class="tile"><div class="k">PU €</div><div class="v mono" id="t_pu">—</div></div>
+    <div class="tile" id="tile_cbm"><div class="k">€/CBM</div><div class="v mono" id="t_cbm">—</div></div>
+    <div class="tile"><div class="k">Coût rendu</div><div class="v mono" id="t_cout">—</div></div>
+    <div class="tile"><div class="k">Vente mini</div><div class="v mono" id="t_vente">—</div></div>
+  </div>
+  <div id="calcsub">
+    <span>CBM/pce <b class="mono" id="s_cbmp">—</b></span>
+    <span>Fret mer <b class="mono" id="s_mer">—</b></span>
+    <span>Fret air <b class="mono" id="s_air">—</b></span>
+    <span>Droits+TVA <b class="mono" id="s_tax">—</b></span>
+  </div>
+  <div id="alerts"></div>
+</div>
+
+<main>
+
+<!-- ============ CAPTURE / FICHE ============ -->
+<section id="screen-capture" class="screen on">
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <h1 id="capture-title" style="font-size:19px;flex:1">Nouveau produit</h1>
+    <button class="sm ghost hidden" id="btn-newfrom" type="button">Nouveau</button>
+  </div>
+
+  <div id="dupbar" class="hidden"></div>
+
+  <!-- 1. PHOTOS -->
+  <div class="card">
+    <h2>1 · Photos <span id="photocount" class="mut"></span></h2>
+    <button class="primary wide xl" type="button" id="btn-photo">📷 Ajouter des photos</button>
+    <input type="file" id="file-photo" accept="image/*" multiple class="hidden">
+    <div id="gallery"></div>
+    <div class="sm mut" id="photohint" style="margin-top:8px">Prends la photo avec l'appareil natif, puis importe-la ici (l'original reste dans la galerie).</div>
+  </div>
+
+  <!-- 2. PRIX + MOQ -->
+  <div class="card">
+    <h2>2 · Prix</h2>
+    <div class="row c2">
+      <div><label>Prix unitaire RMB</label><input id="f_prixRMB" class="big mono" inputmode="decimal" enterkeyhint="next" placeholder="0"></div>
+      <div><label>MOQ (pcs)</label><input id="f_moq" class="big mono" inputmode="numeric" enterkeyhint="next" placeholder="0"></div>
+    </div>
+  </div>
+
+  <!-- 3. STAND -->
+  <div class="card">
+    <h2>3 · Stand</h2>
+    <div class="row c3">
+      <div><label>Bâtiment</label><input id="f_bat" enterkeyhint="next" placeholder="SEG"></div>
+      <div><label>Étage</label><input id="f_etage" enterkeyhint="next" placeholder="2F"></div>
+      <div><label>N°</label><input id="f_num" enterkeyhint="next" placeholder="88"></div>
+    </div>
+    <div class="btnrow" style="margin-top:8px">
+      <button type="button" class="sm" id="btn-geo">📍 Position GPS</button>
+      <button type="button" class="sm ghost" id="btn-maps">🗺️ Ouvrir dans Maps</button>
+    </div>
+    <div class="sm mut" id="geoinfo" style="margin-top:6px"></div>
+  </div>
+
+  <!-- 4. NOM / CATEGORIE -->
+  <div class="card">
+    <h2>4 · Identification</h2>
+    <div class="row"><div><label>Nom</label><input id="f_nom" enterkeyhint="next" placeholder="Lampe LED USB"></div></div>
+    <div class="row c2">
+      <div><label>Catégorie</label><select id="f_cat"></select></div>
+      <div><label>Statut</label><select id="f_statut">
+        <option value="nouveau">nouveau</option>
+        <option value="à_creuser">à creuser</option>
+        <option value="à_relancer">à relancer</option>
+        <option value="validé">validé</option>
+        <option value="écarté">écarté</option>
+      </select></div>
+    </div>
+  </div>
+
+  <!-- 5. CARTON -->
+  <div class="card">
+    <h2>5 · Carton</h2>
+    <div class="row c2">
+      <div><label>Pcs / carton</label><input id="f_pcs" class="mono" inputmode="numeric" placeholder="0"></div>
+      <div><label>Poids carton (kg)</label><input id="f_kg" class="mono" inputmode="decimal" placeholder="0"></div>
+    </div>
+    <div class="row c3">
+      <div><label>L (cm)</label><input id="f_L" class="mono" inputmode="decimal" placeholder="0"></div>
+      <div><label>l (cm)</label><input id="f_W" class="mono" inputmode="decimal" placeholder="0"></div>
+      <div><label>H (cm)</label><input id="f_H" class="mono" inputmode="decimal" placeholder="0"></div>
+    </div>
+  </div>
+
+  <!-- 6. NOTE VOCALE -->
+  <div class="card">
+    <h2>6 · Note vocale</h2>
+    <div class="btnrow">
+      <button type="button" id="btn-rec">🎙️ Enregistrer</button>
+      <button type="button" class="ghost hidden" id="btn-recdel">Supprimer</button>
+    </div>
+    <audio id="audio-play" controls class="hidden" style="width:100%;margin-top:8px"></audio>
+    <div class="sm mut" id="recinfo" style="margin-top:6px"></div>
+    <div class="row" style="margin-top:8px"><div><label>Transcription</label><textarea id="f_transcription" placeholder="rempli plus tard"></textarea></div></div>
+  </div>
+
+  <!-- 7. VENDEUR + CARTE -->
+  <div class="card">
+    <h2>7 · Vendeur</h2>
+    <button class="wide" type="button" id="btn-carte">💳 Photo carte de visite</button>
+    <input type="file" id="file-carte" accept="image/*" multiple class="hidden">
+    <div class="row c2" style="margin-top:10px">
+      <div><label>Nom</label><input id="f_vnom" placeholder=""></div>
+      <div><label>Société</label><input id="f_vsoc" placeholder=""></div>
+    </div>
+    <div class="row c2">
+      <div><label>WeChat</label><input id="f_vwechat" autocapitalize="off" placeholder=""></div>
+      <div><label>Téléphone</label><input id="f_vtel" inputmode="tel" placeholder=""></div>
+    </div>
+    <div class="row"><div><label>Email</label><input id="f_vmail" inputmode="email" autocapitalize="off" placeholder=""></div></div>
+  </div>
+
+  <!-- COMMERCIAL (secondaire) -->
+  <details>
+    <summary>Commercial · paliers, MOQ, délai</summary>
+    <div class="inner">
+      <div class="row c2">
+        <div><label>Délai (jours)</label><input id="f_delai" class="mono" inputmode="numeric" placeholder="0"></div>
+        <div><label>Priorité 1-5</label><select id="f_prio">
+          <option value="3">3 — normale</option><option value="1">1 — max</option><option value="2">2</option>
+          <option value="4">4</option><option value="5">5 — min</option>
+        </select></div>
+      </div>
+      <div class="chk"><input type="checkbox" id="f_perso"><label for="f_perso">Personnalisation possible (logo, couleur)</label></div>
+      <label style="margin-top:8px">Paliers de prix</label>
+      <div id="paliers"></div>
+      <button type="button" class="sm ghost wide" id="btn-palier" style="margin-top:8px">+ Palier</button>
+    </div>
+  </details>
+
+  <!-- ENRICHISSEMENT (lecture seule, vient du batch du soir) -->
+  <details id="enrich-block">
+    <summary>Enrichissement · batch du soir</summary>
+    <div class="inner" id="enrich-body"></div>
+  </details>
+
+  <div id="fiche-actions" class="hidden">
+    <div class="card">
+      <h2>Actions</h2>
+      <div class="btnrow">
+        <button type="button" id="btn-wechat">💬 Copier message WeChat</button>
+        <button type="button" class="danger" id="btn-del">Supprimer le produit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="savebar">
+    <button class="primary wide xl" type="button" id="btn-save">Enregistrer</button>
+  </div>
+</section>
+
+<!-- ============ LISTE ============ -->
+<section id="screen-list" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <h1 style="font-size:19px;flex:1">Produits <span class="mut mono" id="count">0</span></h1>
+    <button class="sm ghost" type="button" id="btn-refresh">↻</button>
+  </div>
+  <div id="filters">
+    <div class="full"><input id="q" placeholder="Rechercher…" autocapitalize="off"></div>
+    <div><label>Tri</label><select id="sort">
+      <option value="date">Date ↓</option>
+      <option value="score">Score</option>
+      <option value="cbm">€/CBM</option>
+      <option value="marge">Marge</option>
+      <option value="stand">Stand</option>
+      <option value="statut">Statut</option>
+    </select></div>
+    <div><label>Statut</label><select id="fstatut"><option value="">Tous</option></select></div>
+    <div><label>Catégorie</label><select id="fcat"><option value="">Toutes</option></select></div>
+    <div><label>Bâtiment</label><select id="fbat"><option value="">Tous</option></select></div>
+    <div class="full chk"><input type="checkbox" id="fblock"><label for="fblock">Uniquement les blocages réglementaires</label></div>
+  </div>
+  <div id="grid"></div>
+</section>
+
+<!-- ============ REGLAGES ============ -->
+<section id="screen-settings" class="screen">
+  <h1 style="font-size:19px;margin-bottom:10px">Réglages</h1>
+
+  <div class="card">
+    <h2>Taux &amp; coûts</h2>
+    <div class="row c2">
+      <div><label>Taux RMB→EUR</label><input id="c_taux" class="mono" inputmode="decimal"></div>
+      <div><label>Fret mer €/CBM</label><input id="c_mer" class="mono" inputmode="decimal"></div>
+    </div>
+    <div class="row c2">
+      <div><label>Fret air €/kg</label><input id="c_air" class="mono" inputmode="decimal"></div>
+      <div><label>Div. volumétrique</label><input id="c_div" class="mono" inputmode="numeric"></div>
+    </div>
+    <div class="row c3">
+      <div><label>TVA</label><input id="c_tva" class="mono" inputmode="decimal"></div>
+      <div><label>Commission</label><input id="c_com" class="mono" inputmode="decimal"></div>
+      <div><label>Marge cible</label><input id="c_marge" class="mono" inputmode="decimal"></div>
+    </div>
+    <div class="row" style="margin-top:8px"><div><label>Catégories (séparées par des virgules)</label><textarea id="c_cats"></textarea></div></div>
+    <button class="primary wide" type="button" id="btn-cfg-save" style="margin-top:10px">Enregistrer les réglages</button>
+    <div class="sm mut" style="margin-top:8px">TVA 0.20 = 20 %. Marge 0.35 = 35 %.</div>
+  </div>
+
+  <div class="card">
+    <h2>Export</h2>
+    <div class="btnrow">
+      <button type="button" id="btn-exp-json">⬇︎ JSON</button>
+      <button type="button" id="btn-exp-csv">⬇︎ CSV</button>
+      <button type="button" id="btn-exp-zip">⬇︎ Photos ZIP</button>
+    </div>
+    <div class="sm mut" id="lastexport" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Import</h2>
+    <button class="wide" type="button" id="btn-imp">⬆︎ Importer un JSON enrichi</button>
+    <input type="file" id="file-json" accept="application/json,.json" class="hidden">
+    <div class="sm mut" style="margin-top:8px">Fusion par <code>id</code>. Les saisies locales plus récentes ne sont jamais écrasées ; les photos locales sont conservées.</div>
+  </div>
+
+  <div class="card">
+    <h2>État</h2>
+    <div id="status-body"></div>
+    <button class="sm ghost wide hidden" id="seedbtn" type="button">🧪 Injecter 8 produits de test</button>
+  </div>
+
+  <div class="card">
+    <h2>Zone dangereuse</h2>
+    <button class="danger wide" type="button" id="btn-wipe">Effacer toutes les données</button>
+  </div>
+
+  <div class="sm mut" style="text-align:center;padding:6px 0 20px" id="version">Sourcing Shenzhen · v0</div>
+</section>
+
+</main>
+
+<nav id="tabbar">
+  <button type="button" data-screen="capture" class="on"><span class="i">＋</span>Capture</button>
+  <button type="button" data-screen="list"><span class="i">▦</span>Liste</button>
+  <button type="button" data-screen="settings"><span class="i">⚙</span>Réglages</button>
+</nav>
+
+<div id="toast" class="hidden"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   Sourcing Shenzhen — app complete, zero dependance, zero build step.
+   Ordre du fichier :
+     1. utils   2. IndexedDB   3. config   4. calculs   5. photos/audio
+     6. formulaire de capture  7. doublons  8. liste  9. export/import
+    10. jeu de test           11. boot (SW, install, share target)
+   ===================================================================== */
+
+/* ---------- 1. utils ---------- */
+const $  = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const now = () => Date.now();
+const uuid = () => (self.crypto && crypto.randomUUID)
+  ? crypto.randomUUID()
+  : 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+
+/** "12,5" -> 12.5 ; "" / null / illisible -> null (jamais NaN) */
+function num(v) {
+  if (v === null || v === undefined) return null;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  const s = String(v).trim().replace(',', '.').replace(/\s/g, '');
+  if (!s) return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+/** Formatage tolerant : null/NaN -> "—", jamais de NaN a l'ecran. */
+function fmt(n, d, suf) {
+  if (n === null || n === undefined || !Number.isFinite(n)) return '—';
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: d === undefined ? 2 : d,
+                                     maximumFractionDigits: d === undefined ? 2 : d }) + (suf || '');
+}
+function norm(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+function slug(s) { return norm(s).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
+function esc(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function debounce(fn, ms) {
+  let t; return function () { clearTimeout(t); const a = arguments; t = setTimeout(() => fn.apply(null, a), ms); };
+}
+let toastTimer = null;
+function toast(msg, ms) {
+  const el = $('#toast');
+  el.textContent = msg; el.classList.remove('hidden'); el.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.opacity = '0';
+    setTimeout(() => el.classList.add('hidden'), 200); }, ms || 2400);
+}
+function kb(bytes) {
+  if (!Number.isFinite(bytes)) return '—';
+  return bytes < 1024 * 1024 ? Math.round(bytes / 1024) + ' Ko'
+                             : (bytes / 1048576).toFixed(2).replace('.', ',') + ' Mo';
+}
+
+/* ---------- 2. IndexedDB ---------- */
+/* 3 stores : products (metadonnees seules), blobs (photos + audio, hors
+   des produits pour que la liste ne charge jamais les binaires), kv. */
+const DB_NAME = 'sourcing-shenzhen', DB_VER = 1;
+let _dbp = null;
+
+function openDB() {
+  if (_dbp) return _dbp;
+  _dbp = new Promise((res, rej) => {
+    const rq = indexedDB.open(DB_NAME, DB_VER);
+    rq.onupgradeneeded = () => {
+      const db = rq.result;
+      if (!db.objectStoreNames.contains('products')) {
+        const s = db.createObjectStore('products', { keyPath: 'id' });
+        s.createIndex('createdAt', 'createdAt');
+      }
+      if (!db.objectStoreNames.contains('blobs')) {
+        const b = db.createObjectStore('blobs', { keyPath: 'id' });
+        b.createIndex('productId', 'productId');
+      }
+      if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv', { keyPath: 'k' });
+    };
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+  return _dbp;
+}
+function idb(store, mode, fn) {
+  return openDB().then((db) => new Promise((res, rej) => {
+    const t = db.transaction(store, mode);
+    let out;
+    const rq = fn(t.objectStore(store));
+    if (rq && 'onsuccess' in rq) { rq.onsuccess = () => { out = rq.result; }; }
+    t.oncomplete = () => res(out);
+    t.onerror = () => rej(t.error);
+    t.onabort = () => rej(t.error);
+  }));
+}
+const saveProduct   = (p) => idb('products', 'readwrite', (s) => s.put(p));
+const getProduct    = (id) => idb('products', 'readonly',  (s) => s.get(id));
+const listProducts  = () => idb('products', 'readonly',  (s) => s.getAll());
+async function deleteProduct(id) {
+  await deleteBlobsFor(id);
+  return idb('products', 'readwrite', (s) => s.delete(id));
+}
+const putBlob    = (rec) => idb('blobs', 'readwrite', (s) => s.put(rec));
+const getBlobRec = (id) => idb('blobs', 'readonly',  (s) => s.get(id));
+const delBlob    = (id) => idb('blobs', 'readwrite', (s) => s.delete(id));
+const listBlobs  = () => idb('blobs', 'readonly',  (s) => s.getAll());
+async function deleteBlobsFor(productId) {
+  const ids = await idb('blobs', 'readonly', (s) => s.index('productId').getAllKeys(productId));
+  for (const id of (ids || [])) await delBlob(id);
+}
+async function getKV(k, dflt) {
+  const r = await idb('kv', 'readonly', (s) => s.get(k));
+  return r ? r.v : dflt;
+}
+const setKV = (k, v) => idb('kv', 'readwrite', (s) => s.put({ k: k, v: v }));
+async function wipeAll() {
+  await idb('products', 'readwrite', (s) => s.clear());
+  await idb('blobs', 'readwrite', (s) => s.clear());
+  await idb('kv', 'readwrite', (s) => s.delete('lastExportAt'));
+}
+
+/* ---------- 3. config ---------- */
+/* Aucun taux n'est code en dur ailleurs que dans ces valeurs par defaut :
+   change et fret bougent, tout se regle dans l'ecran Reglages. */
+const DEFAULT_CONFIG = {
+  tauxRMBEUR: 7.8,                 // combien de RMB pour 1 €
+  fretMaritimeEuroParCBM: 140,
+  fretAerienEuroParKg: 6.5,
+  diviseurVolumetrique: 6000,
+  tauxTVA: 0.20,
+  commissionMarketplace: 0.15,
+  margeCible: 0.35,
+  categories: ['électronique', 'éclairage', 'accessoire téléphone', 'audio', 'maison',
+    'cuisine', 'jouet', 'outillage', 'textile', 'bijoux', 'papeterie', 'animalerie',
+    'sport', 'beauté', 'bagagerie', 'autre']
+};
+const STATUTS = ['nouveau', 'à_creuser', 'à_relancer', 'validé', 'écarté'];
+const ROLES = ['produit', 'packaging', 'étiquette', 'stand', 'carte'];
+const SEUIL_DENSITE = 1500;        // €/CBM : sous ce seuil le fret mange la marge
+
+async function loadConfig() {
+  const saved = await getKV('config', null);
+  return Object.assign({}, DEFAULT_CONFIG, saved || {});
+}
+
+/* ---------- 4. calculs (section 4 de la spec) ---------- */
+/* Tout champ manquant remonte null et s'affiche "—". Les composantes
+   inconnues (fret sans carton, droits sans code SH) sont comptees a 0
+   mais listees dans .partial pour que le chiffre affiche soit honnete. */
+function compute(p, cfg) {
+  const r = { partial: [] };
+  const L = num(p.cartonL), W = num(p.cartonW), H = num(p.cartonH);
+  const pcs = num(p.pcsParCarton), kgCarton = num(p.cartonPoidsKg);
+  const volCm3 = (L && W && H) ? L * W * H : null;
+
+  r.cbmCarton     = volCm3 !== null ? volCm3 / 1000000 : null;
+  r.cbmParPiece   = (r.cbmCarton !== null && pcs) ? r.cbmCarton / pcs : null;
+  r.poidsParPiece = (kgCarton !== null && pcs) ? kgCarton / pcs : null;
+
+  const taux = num(cfg.tauxRMBEUR), pRMB = num(p.prixUnitaireRMB);
+  r.prixUnitaireEUR = (pRMB !== null && taux) ? pRMB / taux : null;
+
+  const eurCbm = num(cfg.fretMaritimeEuroParCBM);
+  r.fretMaritimeParPiece = (r.cbmParPiece !== null && eurCbm !== null) ? r.cbmParPiece * eurCbm : null;
+
+  const divis = num(cfg.diviseurVolumetrique);
+  r.poidsVolumetrique = (volCm3 !== null && divis) ? volCm3 / divis : null;
+  const volParPiece = (r.poidsVolumetrique !== null && pcs) ? r.poidsVolumetrique / pcs : null;
+  const chargeable = (r.poidsParPiece !== null || volParPiece !== null)
+    ? Math.max(r.poidsParPiece || 0, volParPiece || 0) : null;
+  const eurKg = num(cfg.fretAerienEuroParKg);
+  r.fretAerienParPiece = (chargeable !== null && eurKg !== null) ? chargeable * eurKg : null;
+
+  // Le maritime est la reference d'un sourcing conteneur ; l'aerien reste affiche a cote.
+  r.fret = r.fretMaritimeParPiece;
+  if (r.fret === null) r.partial.push('fret');
+
+  if (r.prixUnitaireEUR === null) {
+    r.valeurEnDouane = r.droits = r.tva = r.coutRendu = r.prixVenteMini = r.densiteValeur = null;
+    return r;
+  }
+  const assurance = 0;                       // non parametree en v0
+  const fret = r.fret === null ? 0 : r.fret;
+  r.valeurEnDouane = r.prixUnitaireEUR + fret + assurance;
+
+  const tD = num(p.tauxDroits);
+  if (tD === null) r.partial.push('droits');
+  r.droits = r.valeurEnDouane * (tD === null ? 0 : tD);
+
+  const tva = num(cfg.tauxTVA);
+  r.tva = tva === null ? 0 : (r.valeurEnDouane + r.droits) * tva;
+
+  r.coutRendu = r.prixUnitaireEUR + fret + r.droits + r.tva;
+
+  const marge = num(cfg.margeCible) || 0, com = num(cfg.commissionMarketplace) || 0;
+  const den = 1 - marge - com;
+  r.prixVenteMini = den > 0.01 ? r.coutRendu / den : null;
+
+  r.densiteValeur = (r.prixVenteMini !== null && r.cbmParPiece)
+    ? r.prixVenteMini / r.cbmParPiece : null;
+  r.margeEUR = (r.prixVenteMini !== null) ? r.prixVenteMini - r.coutRendu : null;
+  r.fretTue  = r.densiteValeur !== null && r.densiteValeur < SEUIL_DENSITE;
+  return r;
+}
+
+/* ---------- 5. photos & audio ---------- */
+const MAX_SIDE = 1280, JPEG_Q = 0.7;
+
+async function decode(file) {
+  if (self.createImageBitmap) {
+    try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+    catch (e) { try { return await createImageBitmap(file); } catch (e2) { /* fallback img */ } }
+  }
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image illisible')); };
+    img.src = url;
+  });
+}
+/** Redimensionne a 1280 px max sur le grand cote, JPEG 0.7 (~200 Ko). */
+async function compressImage(file) {
+  const src = await decode(file);
+  const w0 = src.width || src.naturalWidth, h0 = src.height || src.naturalHeight;
+  const scale = Math.min(1, MAX_SIDE / Math.max(w0, h0));
+  const w = Math.max(1, Math.round(w0 * scale)), h = Math.max(1, Math.round(h0 * scale));
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const cx = cv.getContext('2d');
+  cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h);
+  cx.drawImage(src, 0, 0, w, h);
+  if (src.close) src.close();
+  const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', JPEG_Q));
+  return { blob: blob || file, w: w, h: h };
+}
+async function addPhotoFiles(files, role) {
+  const list = Array.from(files || []).filter((f) => f && f.type.indexOf('image') === 0);
+  if (!list.length) return 0;
+  toast('Compression de ' + list.length + ' photo(s)…', 4000);
+  let added = 0;
+  for (const f of list) {
+    try {
+      const out = await compressImage(f);
+      const id = uuid();
+      await putBlob({ id: id, productId: S.current.id, kind: 'photo', blob: out.blob,
+                      mime: 'image/jpeg', bytes: out.blob.size, createdAt: now() });
+      S.photos.push({ id: id, role: role || 'produit', originalLastModified: f.lastModified || null,
+                      bytes: out.blob.size, w: out.w, h: out.h, url: URL.createObjectURL(out.blob) });
+      added++;
+    } catch (e) { toast('Photo ignorée : ' + e.message); }
+  }
+  renderGallery();
+  toast(added + ' photo(s) ajoutée(s)');
+  return added;
+}
+function renderGallery() {
+  const g = $('#gallery');
+  g.innerHTML = S.photos.map((ph, i) => {
+    const opts = ROLES.map((r) => '<option value="' + r + '"' + (r === ph.role ? ' selected' : '') + '>' + r + '</option>').join('');
+    const body = ph.url
+      ? '<img src="' + ph.url + '" alt="">'
+      : '<div class="miss">photo absente<br>(hors export)</div>';
+    return '<div class="ph" data-i="' + i + '">' + body +
+           '<button type="button" class="del" data-del="' + i + '" aria-label="Supprimer">×</button>' +
+           '<select data-role="' + i + '">' + opts + '</select></div>';
+  }).join('');
+  const bytes = S.photos.reduce((a, p) => a + (p.bytes || 0), 0);
+  const n = S.photos.length;
+  $('#photocount').textContent = n ? '· ' + n + (n > 1 ? ' photos · ' : ' photo · ') + kb(bytes) : '';
+}
+$('#gallery').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-del]'); if (!b) return;
+  const i = +b.dataset.del, ph = S.photos[i];
+  if (!ph) return;
+  if (ph.url) URL.revokeObjectURL(ph.url);
+  S.photos.splice(i, 1);
+  try { await delBlob(ph.id); } catch (err) { /* deja absent */ }
+  renderGallery();
+});
+$('#gallery').addEventListener('change', (e) => {
+  const s = e.target.closest('[data-role]'); if (!s) return;
+  S.photos[+s.dataset.role].role = s.value;
+});
+
+/* --- note vocale : MediaRecorder, format variable selon plateforme --- */
+let rec = null, recChunks = [], recStart = 0;
+function pickMime() {
+  const c = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac', 'audio/ogg'];
+  if (!self.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+  for (const m of c) { if (MediaRecorder.isTypeSupported(m)) return m; }
+  return '';
+}
+async function toggleRec() {
+  if (rec && rec.state === 'recording') { rec.stop(); return; }
+  if (!navigator.mediaDevices || !self.MediaRecorder) { toast('Enregistrement non supporté ici'); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mime = pickMime();
+    rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+    recChunks = []; recStart = now();
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) recChunks.push(e.data); };
+    rec.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const type = rec.mimeType || mime || 'audio/webm';
+      const blob = new Blob(recChunks, { type: type });
+      const id = uuid();
+      if (S.audio && S.audio.id) { try { await delBlob(S.audio.id); } catch (e) {} }
+      await putBlob({ id: id, productId: S.current.id, kind: 'audio', blob: blob,
+                      mime: type, bytes: blob.size, createdAt: now() });
+      if (S.audio && S.audio.url) URL.revokeObjectURL(S.audio.url);
+      S.audio = { id: id, mime: type, durationMs: now() - recStart, bytes: blob.size,
+                  url: URL.createObjectURL(blob) };
+      $('#btn-rec').textContent = '🎙️ Réenregistrer';
+      renderAudio();
+      toast('Note vocale enregistrée');
+    };
+    rec.start();
+    $('#btn-rec').textContent = '⏹️ Arrêter';
+    toast('Enregistrement…', 60000);
+  } catch (e) { toast('Micro refusé'); }
+}
+function renderAudio() {
+  const a = $('#audio-play'), del = $('#btn-recdel'), info = $('#recinfo');
+  if (S.audio && S.audio.url) {
+    a.src = S.audio.url; a.classList.remove('hidden'); del.classList.remove('hidden');
+    info.textContent = Math.round((S.audio.durationMs || 0) / 1000) + ' s · ' + kb(S.audio.bytes);
+  } else {
+    a.removeAttribute('src'); a.classList.add('hidden'); del.classList.add('hidden');
+    info.textContent = S.audio ? 'audio absent (non transporté par l\'export)' : '';
+  }
+  $('#btn-rec').textContent = S.audio ? '🎙️ Réenregistrer' : '🎙️ Enregistrer';
+}
+
+/* ---------- 6. formulaire de capture ---------- */
+const S = {
+  screen: 'capture', cfg: Object.assign({}, DEFAULT_CONFIG),
+  current: null, photos: [], audio: null,
+  products: [], listUrls: [], isNew: true, deferredInstall: null
+};
+
+function blankProduct() {
+  return {
+    id: uuid(), createdAt: now(), updatedAt: now(),
+    photos: [], nom: '', categorie: '', stand: { batiment: '', etage: '', numero: '' }, geo: null,
+    noteVocale: null, transcription: '',
+    prixUnitaireRMB: null, paliers: [], moq: null, delaiJours: null, personnalisation: false,
+    pcsParCarton: null, cartonL: null, cartonW: null, cartonH: null, cartonPoidsKg: null,
+    vendeur: { nom: '', societe: '', wechat: '', telephone: '', email: '', photoCarte: null },
+    prix1688: null, concurrentsFR: [], codeSH: null, tauxDroits: null, obligationsReg: [],
+    risqueContrefacon: null, scoreGlobal: null,
+    statut: 'nouveau', priorite: 3
+  };
+}
+function fillSelect(sel, values, extraFirst) {
+  sel.innerHTML = (extraFirst ? '<option value="">' + extraFirst + '</option>' : '') +
+    values.map((v) => '<option value="' + esc(v) + '">' + esc(String(v).replace(/_/g, ' ')) + '</option>').join('');
+}
+function renderPaliers() {
+  const box = $('#paliers');
+  box.innerHTML = (S.current.paliers || []).map((p, i) =>
+    '<div class="row c3" data-p="' + i + '" style="align-items:end">' +
+    '<div><label>Qté</label><input class="mono" inputmode="numeric" data-pq="' + i + '" value="' + esc(p.qte === null || p.qte === undefined ? '' : p.qte) + '"></div>' +
+    '<div><label>Prix RMB</label><input class="mono" inputmode="decimal" data-pp="' + i + '" value="' + esc(p.prixRMB === null || p.prixRMB === undefined ? '' : p.prixRMB) + '"></div>' +
+    '<div><button type="button" class="ghost" data-pd="' + i + '">×</button></div></div>').join('');
+}
+$('#paliers').addEventListener('input', (e) => {
+  const q = e.target.dataset.pq, p = e.target.dataset.pp;
+  if (q !== undefined) S.current.paliers[+q].qte = num(e.target.value);
+  if (p !== undefined) S.current.paliers[+p].prixRMB = num(e.target.value);
+});
+$('#paliers').addEventListener('click', (e) => {
+  const d = e.target.dataset.pd; if (d === undefined) return;
+  S.current.paliers.splice(+d, 1); renderPaliers();
+});
+$('#btn-palier').addEventListener('click', () => {
+  S.current.paliers.push({ qte: null, prixRMB: null }); renderPaliers();
+});
+
+const F = {
+  prixUnitaireRMB: '#f_prixRMB', moq: '#f_moq', nom: '#f_nom', categorie: '#f_cat',
+  pcsParCarton: '#f_pcs', cartonL: '#f_L', cartonW: '#f_W', cartonH: '#f_H',
+  cartonPoidsKg: '#f_kg', delaiJours: '#f_delai', transcription: '#f_transcription',
+  statut: '#f_statut', priorite: '#f_prio'
+};
+const NUM_FIELDS = ['prixUnitaireRMB', 'moq', 'pcsParCarton', 'cartonL', 'cartonW', 'cartonH',
+                    'cartonPoidsKg', 'delaiJours', 'priorite'];
+
+function productToForm(p) {
+  for (const k in F) {
+    const v = p[k];
+    $(F[k]).value = (v === null || v === undefined) ? '' : v;
+  }
+  $('#f_bat').value = (p.stand && p.stand.batiment) || '';
+  $('#f_etage').value = (p.stand && p.stand.etage) || '';
+  $('#f_num').value = (p.stand && p.stand.numero) || '';
+  $('#f_perso').checked = !!p.personnalisation;
+  const v = p.vendeur || {};
+  $('#f_vnom').value = v.nom || ''; $('#f_vsoc').value = v.societe || '';
+  $('#f_vwechat').value = v.wechat || ''; $('#f_vtel').value = v.telephone || '';
+  $('#f_vmail').value = v.email || '';
+  if (!p.priorite) $('#f_prio').value = '3';
+  renderPaliers(); renderGeo(); renderEnrich(p);
+}
+function formToProduct() {
+  const p = S.current;
+  for (const k in F) {
+    const raw = $(F[k]).value;
+    p[k] = NUM_FIELDS.indexOf(k) >= 0 ? num(raw) : raw.trim();
+  }
+  p.stand = { batiment: $('#f_bat').value.trim(), etage: $('#f_etage').value.trim(),
+              numero: $('#f_num').value.trim() };
+  p.personnalisation = $('#f_perso').checked;
+  p.vendeur = Object.assign({}, p.vendeur, {
+    nom: $('#f_vnom').value.trim(), societe: $('#f_vsoc').value.trim(),
+    wechat: $('#f_vwechat').value.trim(), telephone: $('#f_vtel').value.trim(),
+    email: $('#f_vmail').value.trim()
+  });
+  p.photos = S.photos.map((ph) => ({
+    id: ph.id, role: ph.role, originalLastModified: ph.originalLastModified,
+    bytes: ph.bytes || null, w: ph.w || null, h: ph.h || null,
+    missing: ph.url ? undefined : true
+  }));
+  const carte = p.photos.filter((x) => x.role === 'carte')[0];
+  p.vendeur.photoCarte = carte ? carte.id : null;
+  p.noteVocale = S.audio ? { id: S.audio.id, mime: S.audio.mime,
+                             durationMs: S.audio.durationMs, bytes: S.audio.bytes } : null;
+  p.paliers = (p.paliers || []).filter((x) => x.qte !== null || x.prixRMB !== null);
+  if (!p.statut) p.statut = 'nouveau';
+  if (!p.priorite) p.priorite = 3;
+  return p;
+}
+
+/* --- bandeau de calcul, recalcule a chaque frappe --- */
+function refreshCalc() {
+  const p = formToProduct();
+  const r = compute(p, S.cfg);
+  const approx = r.partial.length ? '≈' : '';
+  $('#t_pu').textContent    = fmt(r.prixUnitaireEUR, 2, ' €');
+  $('#t_cbm').textContent   = r.densiteValeur === null ? '—' : fmt(r.densiteValeur, 0, '');
+  $('#t_cout').textContent  = r.coutRendu === null ? '—' : approx + fmt(r.coutRendu, 2, ' €');
+  $('#t_vente').textContent = r.prixVenteMini === null ? '—' : approx + fmt(r.prixVenteMini, 2, ' €');
+  $('#tile_cbm').classList.toggle('warn', !!r.fretTue);
+  $('#s_cbmp').textContent = r.cbmParPiece === null ? '—' : fmt(r.cbmParPiece, 5);
+  $('#s_mer').textContent  = fmt(r.fretMaritimeParPiece, 3, ' €');
+  $('#s_air').textContent  = fmt(r.fretAerienParPiece, 3, ' €');
+  $('#s_tax').textContent  = (r.droits === null && r.tva === null) ? '—'
+    : fmt((r.droits || 0) + (r.tva || 0), 2, ' €');
+
+  const al = [];
+  if (r.fretTue) al.push(['', 'Densité ' + fmt(r.densiteValeur, 0) + ' €/CBM < ' + SEUIL_DENSITE +
+                          ' : le fret maritime absorbe la marge.']);
+  if (r.partial.indexOf('fret') >= 0 && r.prixUnitaireEUR !== null)
+    al.push(['', 'Carton incomplet : fret non compté dans le coût rendu.']);
+  if (r.partial.indexOf('droits') >= 0 && r.prixUnitaireEUR !== null)
+    al.push(['', 'Taux de droits inconnu (code SH à faire au batch du soir).']);
+  (p.obligationsReg || []).forEach((o) => al.push(['red', 'Réglementaire : ' + o]));
+  if (p.risqueContrefacon === 'high') al.push(['red', 'Risque contrefaçon élevé.']);
+  if (p.risqueContrefacon === 'medium') al.push(['', 'Risque contrefaçon moyen.']);
+  $('#alerts').innerHTML = al.map((a) => '<div class="alert ' + a[0] + '">' + esc(a[1]) + '</div>').join('');
+  return r;
+}
+
+/* --- geolocalisation : jamais en continu, uniquement sur geste utilisateur --- */
+function renderGeo() {
+  const g = S.current && S.current.geo;
+  $('#geoinfo').textContent = g
+    ? 'GPS ' + g.lat.toFixed(5) + ', ' + g.lng.toFixed(5) + ' (±' + Math.round(g.accuracy || 0) + ' m)'
+    : '';
+}
+$('#btn-geo').addEventListener('click', () => {
+  if (!navigator.geolocation) { toast('Géoloc non disponible'); return; }
+  toast('Position…', 9000);
+  navigator.geolocation.getCurrentPosition((pos) => {
+    S.current.geo = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+    renderGeo(); toast('Position enregistrée');
+  }, () => toast('Position refusée ou indisponible'),
+     { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
+});
+$('#btn-maps').addEventListener('click', () => {
+  const p = formToProduct();
+  const q = p.geo ? (p.geo.lat + ',' + p.geo.lng)
+    : [p.stand.batiment, p.stand.etage, p.stand.numero, 'Shenzhen'].filter(Boolean).join(' ');
+  if (!q.trim()) { toast('Ni GPS ni stand'); return; }
+  window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q), '_blank');
+});
+
+/* --- panneau enrichissement (rempli par le batch du soir) --- */
+function renderEnrich(p) {
+  const rows = [];
+  const add = (k, v) => rows.push('<div class="kv"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>');
+  add('Score global', p.scoreGlobal === null || p.scoreGlobal === undefined ? '—' : p.scoreGlobal + ' / 100');
+  add('Prix 1688', p.prix1688 === null || p.prix1688 === undefined ? '—' : fmt(num(p.prix1688), 2, ' RMB'));
+  add('Code SH', p.codeSH || '—');
+  add('Taux de droits', p.tauxDroits === null || p.tauxDroits === undefined ? '—' : fmt(num(p.tauxDroits) * 100, 1, ' %'));
+  add('Risque contrefaçon', p.risqueContrefacon || '—');
+  add('Obligations', (p.obligationsReg && p.obligationsReg.length) ? esc(p.obligationsReg.join(', ')) : '—');
+  const c = (p.concurrentsFR || []).map((x) =>
+    '<div class="kv"><span class="k">' + esc(x.source || '?') + (x.url ? ' <a href="' + esc(x.url) + '" target="_blank" rel="noopener">↗</a>' : '') +
+    '</span><span class="v">' + fmt(num(x.prixTTC), 2, ' €') + '</span></div>').join('');
+  $('#enrich-body').innerHTML = rows.join('') +
+    (c ? '<hr><div class="sm mut" style="margin-bottom:4px">Concurrence FR</div>' + c : '');
+}
+
+/* ---------- 7. detection de doublon ---------- */
+/* La fonction la plus rentable de l'app : le meme article se vend dans des
+   dizaines de stands a des prix tres differents. Match texte + proximite prix. */
+function tokens(s) { return norm(s).split(/[^a-z0-9]+/).filter((t) => t.length >= 3); }
+
+function findDuplicates(p, all) {
+  const tk = tokens(p.nom), cat = norm(p.categorie), prix = num(p.prixUnitaireRMB);
+  if (!tk.length && !cat) return [];
+  const out = [];
+  for (const o of all) {
+    if (o.id === p.id) continue;
+    const otk = tokens(o.nom);
+    let common = 0;
+    for (const t of tk) if (otk.indexOf(t) >= 0) common++;
+    const textScore = tk.length ? common / tk.length : 0;
+    const sameCat = cat && norm(o.categorie) === cat;
+    const op = num(o.prixUnitaireRMB);
+    let priceScore = 0;
+    if (prix !== null && op !== null && Math.max(prix, op) > 0) {
+      const ratio = Math.min(prix, op) / Math.max(prix, op);
+      priceScore = ratio > 0.6 ? ratio : 0;
+    }
+    let score = textScore * 0.65 + (sameCat ? 0.15 : 0) + priceScore * 0.25;
+    if (common === 0 && !(sameCat && priceScore > 0.75)) score = 0;
+    if (score >= 0.35) out.push({ p: o, score: score });
+  }
+  return out.sort((a, b) => b.score - a.score).slice(0, 3);
+}
+function standLabel(p) {
+  const s = p.stand || {};
+  const t = [s.batiment, s.etage, s.numero].filter(Boolean).join('-');
+  return t || '';
+}
+function checkDuplicates() {
+  const bar = $('#dupbar');
+  const p = formToProduct();
+  const hits = findDuplicates(p, S.products);
+  if (!hits.length) { bar.classList.add('hidden'); return; }
+  const h = hits[0].p;
+  const where = standLabel(h) || 'stand inconnu';
+  const prix = num(h.prixUnitaireRMB);
+  bar.innerHTML = '<span>Produit similaire — <b>' + esc(h.nom || 'sans nom') + '</b> vu au <b>' + esc(where) + '</b>' +
+    (prix !== null ? ' à <b>' + fmt(prix, 2) + ' RMB</b>' : '') +
+    (hits.length > 1 ? ' <span class="mut">(+' + (hits.length - 1) + ')</span>' : '') + '</span>' +
+    '<button type="button" class="sm" data-open="' + esc(h.id) + '">voir</button>';
+  bar.classList.remove('hidden');
+}
+$('#dupbar').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-open]'); if (!b) return;
+  openProduct(b.dataset.open);
+});
+
+/* ---------- ouverture / sauvegarde ---------- */
+function releasePhotoUrls() {
+  S.photos.forEach((p) => { if (p.url) URL.revokeObjectURL(p.url); });
+  if (S.audio && S.audio.url) URL.revokeObjectURL(S.audio.url);
+}
+async function newProduct(keepStand) {
+  releasePhotoUrls();
+  S.current = blankProduct(); S.photos = []; S.audio = null; S.isNew = true;
+  const last = keepStand === false ? null : await getKV('lastStand', null);
+  if (last) S.current.stand = { batiment: last.batiment || '', etage: last.etage || '', numero: '' };
+  $('#capture-title').textContent = 'Nouveau produit';
+  $('#fiche-actions').classList.add('hidden');
+  $('#btn-newfrom').classList.add('hidden');
+  $('#dupbar').classList.add('hidden');
+  $('#btn-save').textContent = 'Enregistrer';
+  productToForm(S.current); renderGallery(); renderAudio(); refreshCalc();
+  window.scrollTo(0, 0);
+}
+async function openProduct(id) {
+  const p = await getProduct(id);
+  if (!p) { toast('Produit introuvable'); return; }
+  releasePhotoUrls();
+  S.current = Object.assign(blankProduct(), p);
+  S.isNew = false;
+  S.photos = [];
+  for (const ph of (p.photos || [])) {
+    const rec = await getBlobRec(ph.id);
+    S.photos.push(Object.assign({}, ph, { url: rec && rec.blob ? URL.createObjectURL(rec.blob) : null }));
+  }
+  S.audio = null;
+  if (p.noteVocale && p.noteVocale.id) {
+    const rec = await getBlobRec(p.noteVocale.id);
+    S.audio = Object.assign({}, p.noteVocale, { url: rec && rec.blob ? URL.createObjectURL(rec.blob) : null });
+  }
+  $('#capture-title').textContent = p.nom || 'Fiche produit';
+  $('#fiche-actions').classList.remove('hidden');
+  $('#btn-newfrom').classList.remove('hidden');
+  $('#dupbar').classList.add('hidden');
+  $('#btn-save').textContent = 'Enregistrer les modifications';
+  productToForm(S.current); renderGallery(); renderAudio(); refreshCalc();
+  showScreen('capture');
+  window.scrollTo(0, 0);
+}
+async function saveCurrent() {
+  const p = formToProduct();
+  if (!p.photos.length) { toast('Au moins une photo est obligatoire'); $('#btn-photo').focus(); return false; }
+  p.updatedAt = now();
+  await saveProduct(p);
+  if (p.stand && (p.stand.batiment || p.stand.etage)) {
+    await setKV('lastStand', { batiment: p.stand.batiment, etage: p.stand.etage });
+  }
+  S.products = await listProducts();
+  toast(S.isNew ? 'Produit enregistré' : 'Modifications enregistrées');
+  const wasNew = S.isNew;
+  S.isNew = false;
+  $('#fiche-actions').classList.remove('hidden');
+  $('#btn-newfrom').classList.remove('hidden');
+  $('#btn-save').textContent = 'Enregistrer les modifications';
+  $('#capture-title').textContent = p.nom || 'Fiche produit';
+  refreshExportReminder();
+  if (wasNew) await newProduct(true);      // enchainer : on reste dans le flux terrain
+  return true;
+}
+$('#btn-save').addEventListener('click', saveCurrent);
+$('#btn-newfrom').addEventListener('click', () => newProduct(true));
+$('#btn-del').addEventListener('click', async () => {
+  if (!confirm('Supprimer définitivement ce produit ?')) return;
+  await deleteProduct(S.current.id);
+  S.products = await listProducts();
+  toast('Produit supprimé');
+  await newProduct(true);
+});
+$('#btn-photo').addEventListener('click', () => $('#file-photo').click());
+$('#file-photo').addEventListener('change', async (e) => {
+  await addPhotoFiles(e.target.files, 'produit'); e.target.value = '';
+});
+$('#btn-carte').addEventListener('click', () => $('#file-carte').click());
+$('#file-carte').addEventListener('change', async (e) => {
+  await addPhotoFiles(e.target.files, 'carte'); e.target.value = '';
+});
+$('#btn-rec').addEventListener('click', toggleRec);
+$('#btn-recdel').addEventListener('click', async () => {
+  if (S.audio) { try { await delBlob(S.audio.id); } catch (e) {} if (S.audio.url) URL.revokeObjectURL(S.audio.url); }
+  S.audio = null; renderAudio();
+});
+$('#btn-wechat').addEventListener('click', async () => {
+  const p = formToProduct();
+  const msg = wechatMessage(p);
+  try { await navigator.clipboard.writeText(msg); toast('Message WeChat copié'); }
+  catch (e) { prompt('Copier le message :', msg); }
+});
+/* Relance du lendemain : fiche technique, certificats, paliers, echantillon. */
+function wechatMessage(p) {
+  const l = [];
+  l.push('你好！昨天在' + (standLabel(p) || '市场') + '看过您的产品' + (p.nom ? '（' + p.nom + '）' : '') + '。');
+  if (p.prixUnitaireRMB !== null) l.push('报价 ' + p.prixUnitaireRMB + ' 元/个' + (p.moq ? '，MOQ ' + p.moq : '') + '，对吗？');
+  l.push('麻烦发我：1) 产品规格书 2) 认证文件（CE/RoHS/REACH，带电池请附 UN38.3）');
+  l.push('3) 阶梯报价（100 / 500 / 1000 / 3000 pcs，含外箱尺寸、装箱数、毛重）');
+  l.push('4) 打样价格和交期。谢谢！');
+  return l.join('\n');
+}
+
+/* recalcul + doublons a chaque frappe */
+const onDup = debounce(checkDuplicates, 250);
+$$('#screen-capture input, #screen-capture select, #screen-capture textarea').forEach((el) => {
+  if (el.type === 'file') return;
+  el.addEventListener('input', () => {
+    refreshCalc();
+    if (['f_nom', 'f_cat', 'f_prixRMB'].indexOf(el.id) >= 0 && S.isNew) onDup();
+  });
+  el.addEventListener('change', refreshCalc);
+});
+
+/* ---------- 8. liste ---------- */
+let io = null;
+function chipClass(statut) {
+  return { 'nouveau': 'nouveau', 'à_creuser': 'a_creuser', 'à_relancer': 'a_relancer',
+           'validé': 'valide', 'écarté': 'ecarte' }[statut] || 'nouveau';
+}
+function hasBlocage(p) {
+  return (p.obligationsReg && p.obligationsReg.length > 0) || p.risqueContrefacon === 'high';
+}
+function sortProducts(list, mode) {
+  const c = (p) => compute(p, S.cfg);
+  const dsc = (f) => (a, b) => {
+    const va = f(a), vb = f(b);
+    if (va === null || va === undefined) return 1;
+    if (vb === null || vb === undefined) return -1;
+    return vb - va;
+  };
+  if (mode === 'score')  return list.sort(dsc((p) => num(p.scoreGlobal)));
+  if (mode === 'cbm')    return list.sort(dsc((p) => c(p).densiteValeur));
+  if (mode === 'marge')  return list.sort(dsc((p) => c(p).margeEUR));
+  if (mode === 'stand')  return list.sort((a, b) => standLabel(a).localeCompare(standLabel(b)));
+  if (mode === 'statut') return list.sort((a, b) => STATUTS.indexOf(a.statut) - STATUTS.indexOf(b.statut));
+  return list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
+function renderList() {
+  S.listUrls.forEach(URL.revokeObjectURL); S.listUrls = [];
+  if (io) { io.disconnect(); io = null; }
+
+  const q = norm($('#q').value), fs = $('#fstatut').value, fc = $('#fcat').value,
+        fb = $('#fbat').value, fblock = $('#fblock').checked;
+  let list = S.products.filter((p) => {
+    if (fs && p.statut !== fs) return false;
+    if (fc && p.categorie !== fc) return false;
+    if (fb && ((p.stand && p.stand.batiment) || '') !== fb) return false;
+    if (fblock && !hasBlocage(p)) return false;
+    if (q) {
+      const hay = norm([p.nom, p.categorie, standLabel(p), p.vendeur && p.vendeur.societe,
+                        p.vendeur && p.vendeur.nom, p.transcription].filter(Boolean).join(' '));
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  });
+  list = sortProducts(list, $('#sort').value);
+  $('#count').textContent = list.length + (list.length !== S.products.length ? ' / ' + S.products.length : '');
+
+  if (!list.length) {
+    $('#grid').innerHTML = '<div class="empty">' +
+      (S.products.length ? 'Aucun produit ne correspond aux filtres.' : 'Aucun produit. Onglet Capture pour commencer.') +
+      '</div>';
+    return;
+  }
+  $('#grid').innerHTML = list.map((p) => {
+    const r = compute(p, S.cfg);
+    const first = (p.photos || [])[0];
+    const thumb = first && !first.missing
+      ? '<img class="thumb" data-blob="' + esc(first.id) + '" alt="">'
+      : '<div class="nothumb">sans photo</div>';
+    const chips = [
+      '<span class="chip ' + chipClass(p.statut) + '">' + esc(String(p.statut || 'nouveau').replace(/_/g, ' ')) + '</span>',
+      r.fretTue ? '<span class="chip orange">fret ✗</span>' : '',
+      hasBlocage(p) ? '<span class="chip red">régl.</span>' : '',
+      (p.scoreGlobal !== null && p.scoreGlobal !== undefined)
+        ? '<span class="chip ' + (p.scoreGlobal >= 70 ? 'green' : p.scoreGlobal >= 40 ? 'orange' : 'red') + '">' + p.scoreGlobal + '</span>' : ''
+    ].join('');
+    return '<button type="button" class="pcard" data-id="' + esc(p.id) + '">' + thumb +
+      '<div class="b"><div class="n">' + esc(p.nom || 'sans nom') + '</div>' +
+      '<div class="m mono">' + fmt(num(p.prixUnitaireRMB), 2, ' RMB') + ' · ' + fmt(r.prixUnitaireEUR, 2, ' €') + '</div>' +
+      '<div class="m">' + (standLabel(p) ? esc(standLabel(p)) : '—') + ' · ' +
+      (r.densiteValeur === null ? '—' : fmt(r.densiteValeur, 0) + ' €/CBM') + '</div>' +
+      chips + '</div></button>';
+  }).join('');
+
+  // vignettes chargees a la demande : la liste reste instantanee meme a 300 produits
+  const imgs = $$('#grid img[data-blob]');
+  const load = async (img) => {
+    const rec = await getBlobRec(img.dataset.blob);
+    if (rec && rec.blob) { const u = URL.createObjectURL(rec.blob); S.listUrls.push(u); img.src = u; }
+  };
+  if (self.IntersectionObserver) {
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); load(e.target); } });
+    }, { rootMargin: '300px' });
+    imgs.forEach((i) => io.observe(i));
+  } else { imgs.forEach(load); }
+}
+$('#grid').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-id]'); if (!b) return;
+  openProduct(b.dataset.id);
+});
+['#q', '#sort', '#fstatut', '#fcat', '#fbat', '#fblock'].forEach((s) => {
+  $(s).addEventListener('input', renderList);
+  $(s).addEventListener('change', renderList);
+});
+$('#btn-refresh').addEventListener('click', async () => {
+  S.products = await listProducts(); rebuildFilters(); renderList(); toast('Liste actualisée');
+});
+function rebuildFilters() {
+  const keep = { fstatut: $('#fstatut').value, fcat: $('#fcat').value, fbat: $('#fbat').value };
+  fillSelect($('#fstatut'), STATUTS, 'Tous');
+  fillSelect($('#fcat'), S.cfg.categories, 'Toutes');
+  const bats = Array.from(new Set(S.products.map((p) => (p.stand && p.stand.batiment) || '').filter(Boolean))).sort();
+  fillSelect($('#fbat'), bats, 'Tous');
+  $('#fstatut').value = keep.fstatut; $('#fcat').value = keep.fcat; $('#fbat').value = keep.fbat;
+}
+
+/* ---------- 9. export / import ---------- */
+/* Cycle quotidien : export le soir -> enrichissement Claude Code -> import
+   le matin. L'export JSON ne transporte jamais les binaires. */
+const ENRICH_FIELDS = ['prix1688', 'concurrentsFR', 'codeSH', 'tauxDroits', 'obligationsReg',
+                       'risqueContrefacon', 'scoreGlobal', 'transcription'];
+const USER_FIELDS = ['nom', 'categorie', 'stand', 'geo', 'prixUnitaireRMB', 'paliers', 'moq',
+                     'delaiJours', 'personnalisation', 'pcsParCarton', 'cartonL', 'cartonW',
+                     'cartonH', 'cartonPoidsKg', 'vendeur', 'statut', 'priorite'];
+
+function download(blob, name) {
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(u); a.remove(); }, 4000);
+}
+function stamp() {
+  const d = new Date(), p = (n) => String(n).padStart(2, '0');
+  return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+}
+function exportPayload() {
+  return {
+    app: 'sourcing-shenzhen', schema: 1, exportedAt: new Date().toISOString(),
+    config: S.cfg, count: S.products.length,
+    products: S.products.map((p) => JSON.parse(JSON.stringify(p)))
+  };
+}
+async function markExported() {
+  await setKV('lastExportAt', now());
+  refreshExportReminder(); renderStatus();
+}
+$('#btn-exp-json').addEventListener('click', async () => {
+  S.products = await listProducts();
+  download(new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' }),
+           'sourcing-' + stamp() + '.json');
+  await markExported(); toast('JSON exporté');
+});
+const CSV_COLS = [
+  ['id', (p) => p.id], ['createdAt', (p) => new Date(p.createdAt || 0).toISOString()],
+  ['nom', (p) => p.nom], ['categorie', (p) => p.categorie], ['statut', (p) => p.statut],
+  ['priorite', (p) => p.priorite], ['batiment', (p) => p.stand && p.stand.batiment],
+  ['etage', (p) => p.stand && p.stand.etage], ['numero', (p) => p.stand && p.stand.numero],
+  ['lat', (p) => p.geo && p.geo.lat], ['lng', (p) => p.geo && p.geo.lng],
+  ['prixRMB', (p) => p.prixUnitaireRMB], ['moq', (p) => p.moq], ['delaiJours', (p) => p.delaiJours],
+  ['personnalisation', (p) => p.personnalisation ? 1 : 0],
+  ['pcsParCarton', (p) => p.pcsParCarton], ['L', (p) => p.cartonL], ['W', (p) => p.cartonW],
+  ['H', (p) => p.cartonH], ['poidsKg', (p) => p.cartonPoidsKg],
+  ['vendeur', (p) => p.vendeur && p.vendeur.nom], ['societe', (p) => p.vendeur && p.vendeur.societe],
+  ['wechat', (p) => p.vendeur && p.vendeur.wechat], ['tel', (p) => p.vendeur && p.vendeur.telephone],
+  ['prix1688', (p) => p.prix1688], ['codeSH', (p) => p.codeSH], ['tauxDroits', (p) => p.tauxDroits],
+  ['obligations', (p) => (p.obligationsReg || []).join(' | ')],
+  ['risqueCF', (p) => p.risqueContrefacon], ['score', (p) => p.scoreGlobal],
+  ['prixEUR', (p, r) => r.prixUnitaireEUR], ['cbmParPiece', (p, r) => r.cbmParPiece],
+  ['coutRendu', (p, r) => r.coutRendu], ['venteMini', (p, r) => r.prixVenteMini],
+  ['eurParCBM', (p, r) => r.densiteValeur], ['photos', (p) => (p.photos || []).length],
+  ['transcription', (p) => p.transcription]
+];
+function csvCell(v) {
+  if (v === null || v === undefined) return '';
+  const s = typeof v === 'number' ? String(v).replace('.', ',') : String(v);
+  return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+$('#btn-exp-csv').addEventListener('click', async () => {
+  S.products = await listProducts();
+  const lines = [CSV_COLS.map((c) => c[0]).join(';')];
+  for (const p of S.products) {
+    const r = compute(p, S.cfg);
+    lines.push(CSV_COLS.map((c) => csvCell(c[1](p, r))).join(';'));
+  }
+  download(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }),
+           'sourcing-' + stamp() + '.csv');
+  await markExported(); toast('CSV exporté');
+});
+
+/* --- ZIP "store" (sans compression) : les JPEG sont deja compresses --- */
+let CRC_T = null;
+function crc32(u8) {
+  if (!CRC_T) {
+    CRC_T = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      CRC_T[n] = c >>> 0;
+    }
+  }
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function zipStore(entries) {
+  const enc = new TextEncoder(), parts = [], central = [];
+  let offset = 0;
+  const d = new Date();
+  const dt = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() / 2)) & 0xFFFF;
+  const dd = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+  for (const e of entries) {
+    const name = enc.encode(e.name), data = e.data, crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, 0, true); lh.setUint16(10, dt, true); lh.setUint16(12, dd, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+    lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true); ch.setUint16(12, dt, true);
+    ch.setUint16(14, dd, true); ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true);
+    ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true);
+    ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    offset += 30 + name.length + data.length;
+  }
+  const cdSize = central.reduce((a, x) => a + x.length, 0);
+  const eo = new DataView(new ArrayBuffer(22));
+  eo.setUint32(0, 0x06054b50, true); eo.setUint16(8, entries.length, true);
+  eo.setUint16(10, entries.length, true); eo.setUint32(12, cdSize, true);
+  eo.setUint32(16, offset, true);
+  return new Blob(parts.concat(central, [new Uint8Array(eo.buffer)]), { type: 'application/zip' });
+}
+$('#btn-exp-zip').addEventListener('click', async () => {
+  S.products = await listProducts();
+  const byId = {}; S.products.forEach((p) => { byId[p.id] = p; });
+  const blobs = (await listBlobs()).filter((b) => b.kind === 'photo');
+  if (!blobs.length) { toast('Aucune photo à exporter'); return; }
+  toast('Construction du ZIP…', 6000);
+  const entries = []; const seen = {};
+  for (const b of blobs) {
+    const p = byId[b.productId]; if (!p) continue;
+    const meta = (p.photos || []).filter((x) => x.id === b.id)[0] || { role: 'produit' };
+    let name = (slug(standLabel(p)) || 'stand') + '_' + p.id.slice(0, 8) + '_' + slug(meta.role) + '.jpg';
+    let n = 1; while (seen[name]) { name = name.replace(/(\.jpg)$/, '-' + (++n) + '$1'); }
+    seen[name] = 1;
+    entries.push({ name: name, data: new Uint8Array(await b.blob.arrayBuffer()) });
+  }
+  download(zipStore(entries), 'photos-' + stamp() + '.zip');
+  toast(entries.length + ' photos exportées');
+});
+
+/* --- import : fusion par id, sans ecraser une saisie locale plus recente --- */
+$('#btn-imp').addEventListener('click', () => $('#file-json').click());
+$('#file-json').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    const incoming = Array.isArray(data) ? data : (data.products || []);
+    if (!incoming.length) { toast('Aucun produit dans ce fichier'); return; }
+    const res = await mergeImport(incoming);
+    if (data.config && confirm('Importer aussi les réglages (taux, fret, marge) ?')) {
+      S.cfg = Object.assign({}, DEFAULT_CONFIG, data.config);
+      await setKV('config', S.cfg); configToForm();
+    }
+    S.products = await listProducts();
+    rebuildFilters(); renderList(); renderStatus();
+    toast(res.added + ' ajoutés · ' + res.updated + ' enrichis · ' + res.skipped + ' inchangés', 4000);
+  } catch (err) { toast('Import impossible : ' + err.message, 4000); }
+});
+async function mergeImport(incoming) {
+  const locals = await listProducts();
+  const byId = {}; locals.forEach((p) => { byId[p.id] = p; });
+  let added = 0, updated = 0, skipped = 0;
+  for (const inc of incoming) {
+    if (!inc || !inc.id) continue;
+    const local = byId[inc.id];
+    if (!local) {
+      const p = Object.assign(blankProduct(), inc);
+      p.photos = (inc.photos || []).map((ph) => Object.assign({}, ph, { missing: true }));
+      p.noteVocale = null;                    // les binaires ne voyagent pas
+      p.createdAt = inc.createdAt || now();
+      p.updatedAt = inc.updatedAt || p.createdAt;
+      await saveProduct(p); added++; continue;
+    }
+    const merged = Object.assign({}, local);
+    let touched = false;
+    ENRICH_FIELDS.forEach((k) => {              // l'enrichissement vient toujours du batch
+      if (inc[k] !== undefined && inc[k] !== null && JSON.stringify(inc[k]) !== JSON.stringify(local[k])) {
+        merged[k] = inc[k]; touched = true;
+      }
+    });
+    if ((inc.updatedAt || 0) > (local.updatedAt || 0)) {   // saisie distante plus recente
+      USER_FIELDS.forEach((k) => { if (inc[k] !== undefined) merged[k] = inc[k]; });
+      merged.updatedAt = inc.updatedAt; touched = true;
+    }
+    if (!(local.photos || []).length && (inc.photos || []).length) {
+      merged.photos = inc.photos.map((ph) => Object.assign({}, ph, { missing: true })); touched = true;
+    }
+    if (touched) { await saveProduct(merged); updated++; } else skipped++;
+  }
+  return { added: added, updated: updated, skipped: skipped };
+}
+
+/* --- rappel d'export : plus de 6 h sans export = risque de perte --- */
+const SIX_H = 6 * 3600 * 1000;
+async function refreshExportReminder() {
+  const last = await getKV('lastExportAt', 0);
+  const n = (await listProducts()).length;
+  const stale = n > 0 && (!last || now() - last > SIX_H);
+  let b = $('#banner-export');
+  if (!stale) { if (b) b.remove(); return; }
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'banner-export'; b.className = 'banner export';
+    b.innerHTML = '<span></span><button type="button" class="sm">Exporter</button>';
+    b.querySelector('button').addEventListener('click', () => $('#btn-exp-json').click());
+    $('#banners').appendChild(b);
+  }
+  b.querySelector('span').textContent = last
+    ? 'Dernier export il y a ' + Math.floor((now() - last) / 3600000) + ' h — ' + n + ' produits en local.'
+    : 'Jamais exporté — ' + n + ' produits en local.';
+}
+
+/* ---------- reglages ---------- */
+const CFG_FIELDS = { tauxRMBEUR: '#c_taux', fretMaritimeEuroParCBM: '#c_mer',
+  fretAerienEuroParKg: '#c_air', diviseurVolumetrique: '#c_div', tauxTVA: '#c_tva',
+  commissionMarketplace: '#c_com', margeCible: '#c_marge' };
+function configToForm() {
+  for (const k in CFG_FIELDS) $(CFG_FIELDS[k]).value = S.cfg[k];
+  $('#c_cats').value = (S.cfg.categories || []).join(', ');
+}
+$('#btn-cfg-save').addEventListener('click', async () => {
+  const next = Object.assign({}, S.cfg);
+  for (const k in CFG_FIELDS) {
+    const v = num($(CFG_FIELDS[k]).value);
+    if (v !== null) next[k] = v;
+  }
+  const cats = $('#c_cats').value.split(',').map((s) => s.trim()).filter(Boolean);
+  if (cats.length) next.categories = cats;
+  S.cfg = next; await setKV('config', next);
+  fillSelect($('#f_cat'), S.cfg.categories, '—');
+  $('#f_cat').value = S.current.categorie || '';
+  rebuildFilters(); configToForm(); refreshCalc(); renderList();
+  toast('Réglages enregistrés');
+});
+$('#btn-wipe').addEventListener('click', async () => {
+  if (!confirm('Effacer TOUTES les données locales (produits, photos, audio) ?')) return;
+  if (!confirm('Confirmer : cette action est irréversible.')) return;
+  await wipeAll();
+  S.products = []; await newProduct(false);
+  rebuildFilters(); renderList(); renderStatus(); refreshExportReminder();
+  toast('Base vidée');
+});
+async function renderStatus() {
+  const n = S.products.length;
+  const blobs = await listBlobs();
+  const bytes = blobs.reduce((a, b) => a + (b.bytes || 0), 0);
+  let quota = '', persisted = '—';
+  if (navigator.storage && navigator.storage.estimate) {
+    try {
+      const e = await navigator.storage.estimate();
+      quota = kb(e.usage || 0) + ' / ' + kb(e.quota || 0);
+    } catch (err) {}
+  }
+  if (navigator.storage && navigator.storage.persisted) {
+    try { persisted = (await navigator.storage.persisted()) ? 'oui' : 'non (iOS : purge possible)'; }
+    catch (err) {}
+  }
+  const last = await getKV('lastExportAt', 0);
+  $('#lastexport').textContent = last ? 'Dernier export : ' + new Date(last).toLocaleString('fr-FR')
+                                      : 'Jamais exporté.';
+  const rows = [
+    ['Produits', n], ['Binaires', blobs.length + ' · ' + kb(bytes)],
+    ['Stockage', quota || '—'], ['Stockage persistant', persisted],
+    ['Service worker', ('serviceWorker' in navigator) ? (navigator.serviceWorker.controller ? 'actif (offline OK)' : 'en attente') : 'non supporté'],
+    ['Share target', ('share' in navigator || 'canShare' in navigator) ? 'partage disponible' : 'fallback fichier'],
+    ['Mode', window.matchMedia('(display-mode: standalone)').matches ? 'installée' : 'navigateur']
+  ];
+  $('#status-body').innerHTML = rows.map((r) =>
+    '<div class="kv"><span class="k">' + r[0] + '</span><span class="v">' + esc(r[1]) + '</span></div>').join('') +
+    (S.deferredInstall ? '<button type="button" class="primary wide" id="btn-install" style="margin-top:10px">📲 Installer l\'app</button>' : '');
+  const bi = $('#btn-install');
+  if (bi) bi.addEventListener('click', async () => {
+    S.deferredInstall.prompt(); S.deferredInstall = null; renderStatus();
+  });
+}
+
+/* ---------- 10. jeu de test (bouton cache dans les reglages) ---------- */
+/* 8 produits realistes dont deux quasi-doublons et un produit a batterie,
+   pour valider tris, alertes et doublons sans ressaisie manuelle. */
+function fakePhoto(label, hue) {
+  const cv = document.createElement('canvas');
+  cv.width = 640; cv.height = 640;
+  const c = cv.getContext('2d');
+  c.fillStyle = 'hsl(' + hue + ',45%,72%)'; c.fillRect(0, 0, 640, 640);
+  c.fillStyle = 'hsl(' + hue + ',55%,40%)'; c.fillRect(70, 180, 500, 300);
+  c.fillStyle = '#10203a'; c.font = 'bold 44px sans-serif'; c.textAlign = 'center';
+  c.fillText(String(label).slice(0, 16), 320, 350);
+  c.font = '26px sans-serif'; c.fillText('TEST', 320, 400);
+  return new Promise((r) => cv.toBlob(r, 'image/jpeg', JPEG_Q));
+}
+const SEED = [
+  { nom: 'Lampe LED USB col de cygne', categorie: 'éclairage', prixUnitaireRMB: 11, moq: 100,
+    stand: { batiment: 'SEG', etage: '2F', numero: '88' }, pcsParCarton: 200,
+    cartonL: 60, cartonW: 40, cartonH: 45, cartonPoidsKg: 12, delaiJours: 15, statut: 'à_creuser' },
+  { nom: 'Lampe LED USB flexible', categorie: 'éclairage', prixUnitaireRMB: 8.5, moq: 200,
+    stand: { batiment: 'Huaqiang Plaza', etage: '3F', numero: 'B12' }, pcsParCarton: 240,
+    cartonL: 58, cartonW: 42, cartonH: 44, cartonPoidsKg: 13, delaiJours: 20, statut: 'nouveau' },
+  { nom: 'Écouteurs TWS boîtier batterie', categorie: 'audio', prixUnitaireRMB: 42, moq: 50,
+    stand: { batiment: 'SEG', etage: '4F', numero: '112' }, pcsParCarton: 100,
+    cartonL: 50, cartonW: 40, cartonH: 40, cartonPoidsKg: 9, delaiJours: 25, statut: 'à_creuser',
+    codeSH: '8518300000', tauxDroits: 0.03, scoreGlobal: 38, risqueContrefacon: 'high',
+    obligationsReg: ['UN38.3 batterie lithium', 'directive RED sans-fil', 'CE', 'RoHS', 'DEEE'],
+    prix1688: 24, concurrentsFR: [{ source: 'Amazon.fr', url: '', prixTTC: 19.9, note: 'saturé' }] },
+  { nom: 'Panier de rangement plastique 30L', categorie: 'maison', prixUnitaireRMB: 6.2, moq: 500,
+    stand: { batiment: 'Yiwu Hall', etage: '1F', numero: 'A07' }, pcsParCarton: 20,
+    cartonL: 90, cartonW: 60, cartonH: 80, cartonPoidsKg: 8, delaiJours: 12, statut: 'nouveau',
+    scoreGlobal: 21 },
+  { nom: 'Câble USB-C tressé 1m', categorie: 'accessoire téléphone', prixUnitaireRMB: 2.4, moq: 1000,
+    stand: { batiment: 'SEG', etage: '2F', numero: '210' }, pcsParCarton: 1000,
+    cartonL: 55, cartonW: 40, cartonH: 35, cartonPoidsKg: 16, delaiJours: 10, statut: 'validé',
+    codeSH: '8544422000', tauxDroits: 0.033, scoreGlobal: 74, prix1688: 1.5 },
+  { nom: 'Peluche lapin 25cm', categorie: 'jouet', prixUnitaireRMB: 14, moq: 300,
+    stand: { batiment: 'Luohu Toys', etage: '5F', numero: '501' }, pcsParCarton: 60,
+    cartonL: 80, cartonW: 60, cartonH: 70, cartonPoidsKg: 11, delaiJours: 30, statut: 'à_relancer',
+    obligationsReg: ['EN71 jouet', 'marquage CE', 'REP emballage / Triman'], scoreGlobal: 45 },
+  { nom: 'Tournevis de précision 24 en 1', categorie: 'outillage', prixUnitaireRMB: 9.8, moq: 200,
+    stand: { batiment: 'Huaqiang Plaza', etage: '1F', numero: 'C33' }, pcsParCarton: 120,
+    cartonL: 50, cartonW: 35, cartonH: 30, cartonPoidsKg: 18, delaiJours: 18, statut: 'à_creuser',
+    codeSH: '8205400000', tauxDroits: 0.027, scoreGlobal: 66 },
+  { nom: 'Bracelet acier inoxydable', categorie: 'bijoux', prixUnitaireRMB: 3.5, moq: 500,
+    stand: { batiment: 'Shui Bei', etage: '2F', numero: '44' }, pcsParCarton: 500,
+    cartonL: 40, cartonW: 30, cartonH: 25, cartonPoidsKg: 14, delaiJours: 14, statut: 'écarté',
+    scoreGlobal: 52 }
+];
+async function injectSeed() {
+  let i = 0;
+  for (const s of SEED) {
+    const p = Object.assign(blankProduct(), s);
+    p.createdAt = now() - (SEED.length - i) * 3600000;
+    p.updatedAt = p.createdAt;
+    p.vendeur = { nom: 'Vendeur ' + (i + 1), societe: 'Shenzhen Test Co', wechat: 'wx_test_' + i,
+                  telephone: '+86 138 0000 000' + i, email: '', photoCarte: null };
+    const blob = await fakePhoto(p.nom, (i * 47) % 360);
+    const bid = uuid();
+    await putBlob({ id: bid, productId: p.id, kind: 'photo', blob: blob, mime: 'image/jpeg',
+                    bytes: blob.size, createdAt: p.createdAt });
+    p.photos = [{ id: bid, role: 'produit', originalLastModified: p.createdAt,
+                  bytes: blob.size, w: 640, h: 640 }];
+    await saveProduct(p);
+    i++;
+  }
+  S.products = await listProducts();
+  rebuildFilters(); renderList(); renderStatus(); refreshExportReminder();
+  toast(SEED.length + ' produits de test injectés', 3000);
+}
+let seedTaps = 0;
+$('#version').addEventListener('click', () => {
+  if (++seedTaps >= 5) { $('#seedbtn').classList.remove('hidden'); toast('Jeu de test débloqué'); }
+});
+$('#seedbtn').addEventListener('click', injectSeed);
+
+/* ---------- 11. navigation & boot ---------- */
+function showScreen(name) {
+  S.screen = name;
+  $$('.screen').forEach((s) => s.classList.toggle('on', s.id === 'screen-' + name));
+  $$('#tabbar button').forEach((b) => b.classList.toggle('on', b.dataset.screen === name));
+  $('#calcbar').classList.toggle('hidden', name !== 'capture');
+  if (name === 'list') { rebuildFilters(); renderList(); }
+  if (name === 'settings') { configToForm(); renderStatus(); }
+  window.scrollTo(0, 0);
+}
+$$('#tabbar button').forEach((b) => b.addEventListener('click', async () => {
+  const t = b.dataset.screen;
+  if (t === 'capture' && S.screen === 'capture' && !S.isNew) { await newProduct(true); }
+  if (t === 'list' || t === 'settings') S.products = await listProducts();
+  showScreen(t);
+}));
+
+/* --- Share Target Android : le SW depose les fichiers partages dans un cache --- */
+async function drainShareInbox() {
+  if (!self.caches) return;
+  try {
+    const has = await caches.has('sourcing-share-inbox');
+    if (!has) return;
+    const inbox = await caches.open('sourcing-share-inbox');
+    const keys = await inbox.keys();
+    if (!keys.length) return;
+    const files = [];
+    for (const k of keys) {
+      const res = await inbox.match(k);
+      if (!res) continue;
+      const blob = await res.blob();
+      const lm = Number(res.headers.get('X-Last-Modified')) || now();
+      files.push(new File([blob], 'share.jpg', { type: blob.type || 'image/jpeg', lastModified: lm }));
+      await inbox.delete(k);
+    }
+    if (!files.length) return;
+    showScreen('capture');
+    await addPhotoFiles(files, 'produit');
+  } catch (e) { /* le partage ne doit jamais bloquer l'app */ }
+}
+
+async function init() {
+  S.cfg = await loadConfig();
+  fillSelect($('#f_cat'), S.cfg.categories, '—');
+  rebuildFilters();
+  configToForm();
+
+  // Stockage persistant : accorde sur Chrome Android, refuse en silence sur iOS.
+  if (navigator.storage && navigator.storage.persist) {
+    const already = await getKV('persistAsked', false);
+    if (!already) {
+      try { await navigator.storage.persist(); } catch (e) {}
+      await setKV('persistAsked', true);
+    }
+  }
+
+  S.products = await listProducts();
+  await newProduct(true);
+  renderList();
+  refreshExportReminder();
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('screen') === 'list') showScreen('list');
+  else if (params.get('screen') === 'settings') showScreen('settings');
+  else showScreen('capture');
+  if (params.get('share') === '1' || params.get('screen')) {
+    history.replaceState({}, '', location.pathname);
+  }
+  await drainShareInbox();
+  setInterval(refreshExportReminder, 10 * 60 * 1000);
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); S.deferredInstall = e;
+  if (S.screen === 'settings') renderStatus();
+});
+window.addEventListener('beforeunload', releasePhotoUrls);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            const b = document.createElement('div');
+            b.className = 'banner update';
+            b.innerHTML = '<span>Nouvelle version disponible.</span><button type="button" class="sm">Recharger</button>';
+            b.querySelector('button').addEventListener('click', () => {
+              nw.postMessage({ type: 'SKIP_WAITING' }); location.reload();
+            });
+            $('#banners').appendChild(b);
+          }
+        });
+      });
+    }).catch(() => { /* http local : l'app marche, sans offline */ });
+  });
+}
+
+init().catch((e) => { toast('Erreur de démarrage : ' + e.message, 8000); });
+
+/* =====================================================================
+   IDEES NOTEES, VOLONTAIREMENT NON IMPLEMENTEES (hors perimetre v0/v1) :
+   - OCR des cartes de visite (v2)
+   - comparateur multi-fournisseurs cote a cote (v2)
+   - backend + sync multi-appareils, suivi echantillons/commandes (v2)
+   - carte des stands (v1) : necessite des tuiles hors-ligne, non triviales
+   - mode "batterie faible" : inutile ici, aucune geoloc continue n'est lancee,
+     la position n'est prise que sur appui explicite du bouton.
+   - Background Sync one-shot : rien a synchroniser tant qu'il n'y a pas de
+     backend ; Periodic Background Sync volontairement ignore (Chrome le bride,
+     iOS ne l'a pas).
+   ===================================================================== */
+</script>
+</body>
+</html>
